@@ -1,0 +1,51 @@
+0. Connect to the psql console to execute SQL commands for the ls_burger database:
+sudo -u postgres psql ls_burger
+
+2. Query to select all customer names from orders:
+SELECT customer_name FROM orders;
+
+3. Query to select all orders including a Chocolate Shake:
+SELECT * FROM orders WHERE drink = 'Chocolate Shake';
+
+# takeaway: '=' operator in SQL is used for comparisons, not '=='
+
+4. Query to select burder, side, and drink columns for only the order with id 2
+SELECT burger, side, drink FROM orders WHERE id = 2;
+
+5. Query to select all customers that ordered Onion Rings
+SELECT customer_name FROM orders WHERE side = 'Onion Rings';
+
+6. Create new database from the terminal, not the psql console:
+sudo -u postgres createdb a_new_database
+
+7. Connect to database created through the psql console & make a new database from w/in the psql console:
+sudo -u postgres psql a_new_database    # to connect
+CREATE DATABASE another_database;       # to create new db from w/in psql console
+
+8. Switch connection to a different database from within the psql console:
+\c another_database
+
+9. Delete a database from within the psql console:
+DROP DATABASE a_new_database;
+\list                                   # check deletion by listing all current databases
+
+10. Delete a database from the terminal:
+sudo -u postgres dropdb another_database
+
+11. Create tables within a database via psql console:
+CREATE TABLE countries (
+    id serial,                          # each row specifies: column_name data_type optional_constraints
+    name varchar(50) UNIQUE NOT NULL,   # varchar() specifies up to a certain # of characters, but doesn't pad string 
+    capital varchar(50) NOT NULL,       #      with spaces if the string's length is less than the argument specified
+    population integer
+);
+
+
+CREATE TABLE animals (
+    id serial,
+    name varchar(100) NOT NULL,
+    binomial_name varchar(100) NOT NULL,
+    max_weight_kg decimal(8,3),         # decimal's 1st argument specifies total # of digits allowed & 2nd argument
+    max_age integer,                    #       specifies digits allowed to the right of the decimal point
+    conservation_status char(2)
+);
