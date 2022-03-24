@@ -9,10 +9,10 @@ SELECT * FROM orders WHERE drink = 'Chocolate Shake';
 
 # takeaway: '=' operator in SQL is used for comparisons, not '=='
 
-4. Query to select burder, side, and drink columns for only the order with id 2
+4. Query to select burder, side, and drink columns for only the order with id 2:
 SELECT burger, side, drink FROM orders WHERE id = 2;
 
-5. Query to select all customers that ordered Onion Rings
+5. Query to select all customers that ordered Onion Rings:
 SELECT customer_name FROM orders WHERE side = 'Onion Rings';
 
 6. Create new database from the terminal, not the psql console:
@@ -49,3 +49,65 @@ CREATE TABLE animals (
     max_age integer,                    #       specifies digits allowed to the right of the decimal point
     conservation_status char(2)
 );
+
+12. Update a date_of_birth column to store an actual date instead of a string & add constraint to ensure value:
+exists for each row of the column
+ALTER TABLE table_name
+    ALTER COLUMN date_of_birth
+    TYPE date
+    USING date_of_birth::date,  # must specify USING clause to clarify conversion of data type & comma separate chained commands
+    SET NOT NULL;
+
+13. Updating column to different precision and scale:
+ALTER TABLE animals
+    ALTER COLUMN max_weight_kg TYPE decimal(10,4);    # USING clause not required when there is a natural conversion
+
+14. Update table to drop an order total column & replace it with 3 new columns:
+ALTER TABLE orders
+    ADD COLUMN burger_cost decimal(4, 2) DEFAULT 0,
+    ADD COLUMN side_cost decimal(4, 2) DEFAULT 0,
+    ADD COLUMN drink_cost decimal(4, 2) DEFAULT 0,
+    DROP COLUMN order_total;
+    
+15. Add multiple rows of data to a table:
+INSERT INTO countries (name, capital, population)   # id column not specified will get default value
+    VALUES ('USA', 'Washington D.C.', 325365189),   # (row1), (row2), row(3);
+           ('Germany', 'Berlin', 82349400),
+           ('Japan', 'Tokyo', 126672000);
+
+INSERT INTO celebrities (first_name, last_name, occupation, date_of_birth, deceased)
+    VALUES ('Frank', 'Sinatra', 'Singer, Actor', '1915-12-12', true)
+           ('Tom', 'Cruise', 'Actor', '1962-07-03', DEFAULT);   # can also explicitly specify a row should use column's default value
+
+16. Drop constraints no longer needed:
+ALTER TABLE animals
+    DROP CONSTRAINT unique_binomial_name;
+
+ALTER TABLE celebrities
+    ALTER COLUMN last_naame DROP NOT NULL;    # NOT NULL is always a column constraint 
+
+17. Query country names and capitals sorted by population:
+SELECT name, capital
+    FROM countries
+    ORDER BY population DESC;
+    
+SELECT name, capital
+    FROM countries
+    ORDER BY population;    # default sorts ascendingly for numerical columns
+
+18. Query based on population between 70 million (inclusive) and 200 million (exclusive):
+SELECT name, capital, population
+    FROM countries
+    WHERE population >= 70000000 AND population < 200000000;
+
+19. Query to return all records associated with occupations including singing and acting:
+SELECT first_name, last_name
+    FROM celebrities
+    WHERE (occupation LIKE '%Actor%' OR occupation LIKE '%Actress%')
+    AND occupation LIKE '%Singer%';
+
+20. Query to find all orders that don't have fries as a side:
+SELECT customer_name
+    FROM orders
+    WHERE side != 'Fries'
+    OR side IS NULL;
