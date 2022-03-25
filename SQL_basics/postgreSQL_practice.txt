@@ -187,3 +187,125 @@ UPDATE orders
     side_cost = 0.99,
     customer_loyalty_points = 13,
     WHERE id = 4;
+
+28. Create a one-to-many relationship between two tables:
+CREATE TABLE continents (
+    id serial PRIMARY KEY,
+    continent_name varchar(50) NOT NULL
+);
+
+ALTER TABLE countries
+    DROP COLUMN continent;
+
+ALTER TABLE countries
+    ADD COLUMN continent_id integer;
+
+ALTER TABLE countries
+    ADD FOREIGN KEY (continent_id)
+    REFERENCES continents(id);
+
+INSERT INTO continents (id, continent_name)
+    VALUES (1, 'Europe'),
+           (2, 'North America'),
+           (3, 'Asia'),
+           (4, 'Africa'),
+           (5, 'South America');
+
+INSERT INTO countries (name, capital, population, continent_id)
+    VALUES ('France', 'Paris', 67158000, 1),
+           ('Brazil', 'Brasilia', 208385000, 5),
+           ('Japan', 'Tokyo', 126672000, 3),
+           ('USA', 'Washington D.C.', 325365189, 2),
+           ('Egypt', 'Cairo', 96308900, 4);
+
+29. Normalize orders table by splitting data into multiple tables:
+
+# one-to-one relationship is created between customer and email address by setting
+#  the customer_id as the primary key for the customers table and foreign key of the email_addresses table
+
+CREATE TABLE customers (
+    id serial PRIMARY KEY,
+    customer_name varchar(100)
+);
+
+CREATE TABLE email_addresses (
+    customer_id integer PRIMARY KEY,
+    customer_email varchar(50),
+    FOREIGN KEY (customer_id) 
+    REFERENCES customers(id)
+    ON DELETE CASCADE       # if customer is deleted then email address is deleted via CASCADE clause
+);
+
+INSERT INTO customers (customer_name)
+     VALUES ('John Doe'),
+            ('Natasha O''Shea');    # need to escape single quote character with a single quote character
+
+INSERT INTO email_addresses (customer_id, customer_email)
+     VALUES (1, 'johndoe@this_is_a_fake_email.com'),
+            (2, 'natoshea@this_is_a_fake_email.com');
+
+CREATE TABLE products (
+     id serial PRIMARY KEY,
+     product_name varchar(50),
+     product_type varchar(20),
+     product_cost numeric(4,2) DEFAULT 0,
+     product_loyalty_points integer 
+);
+
+INSERT INTO products (product_name, product_cost, product_type, product_loyalty_points)
+VALUES ('Burger', 3.00, 'Burger', 10 ),
+       ('Cheeseburger', 3.50, 'Burger', 15 ),
+       ('Chicken Burger', 4.50, 'Burger', 20 ),
+       ('Double Deluxe Burger', 6.00, 'Burger', 30 ),
+       ('Fries', 1.20, 'Side', 3 ),
+       ('Onion Rings', 1.50, 'Side', 5 ),
+       ('Cola', 1.50, 'Drink', 5 ),
+       ('Lemonade', 1.50, 'Drink', 5 ),
+       ('Vanilla Shake', 2.00, 'Drink', 7 ),
+       ('Chocolate Shake', 2.00, 'Drink', 7 ),
+       ('Strawberry Shake', 2.00, 'Drink', 7);
+
+DROP TABLE orders;
+
+# recreate orders table with only necessary columns to create one-to-many relationship between
+#   customers and orders (order is tied to one customer, but one customer can have many orders)
+
+CREATE TABLE orders (
+    id serial PRIMARY KEY,
+    customer_id integer NOT NULL,
+    order_status varchar(30),
+    FOREIGN KEY (customer_id)
+        REFERENCES customers(id)
+        ON DELETE CASCADE
+);
+
+# create order_items table as a reference table that establishes a many-to-many relationship
+#  between the orders and products table 
+
+CREATE TABLE order_items (
+    id serial PRIMARY KEY,
+    order_id integer NOT NULL,
+    product_id integer NOT NULL,
+    FOREIGN KEY (order_id)
+    REFERENCES orders (id)
+    ON DELETE CASCADE,
+    FOREIGN KEY (product_id)
+    REFERENCES products (id)
+    ON DELETE CASCADE
+);
+
+# order of adding in data matters, so as to not invalidate a NOT NULL condition and raise an exception
+INSERT INTO orders (customer_id, order_status)
+    VALUES (1, 'Waiting to be processed'),
+           (1, 'Processing'),
+           (2, 'Waiting to be processed'),
+           (2, 'Fulfilled');
+
+INSERT INTO order_items (order_id, product_id)
+VALUES (5, 7),
+       (6, 6),
+       (7, 8),
+       (7, 2),
+       (7, 3),
+       (8, 5),
+       (8, 7);
