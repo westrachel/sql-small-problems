@@ -111,3 +111,79 @@ SELECT customer_name
     FROM orders
     WHERE side != 'Fries'
     OR side IS NULL;
+
+21. Queries to find the 2 countries with the largest populations:
+SELECT name
+    FROM countries
+    ORDER BY population DESC
+    LIMIT 1;            # returns name of country w/ largest populaton only
+
+SELECT name
+    FROM countries
+    ORDER BY population DESC
+    LIMIT 1 OFFSET 1;   # returns name of country w/ 2nd largest population
+
+SELECT name
+    FROM countries
+    ORDER BY population DESC
+    LIMIT 2;            # return the names of the 2 countries with largest populations
+
+22. Query to return the longest capital name:
+SELECT capital
+    FROM countries
+    ORDER BY length(capital) DESC
+    LIMIT 1;
+
+23. Query to return the number of animals associated with each conservation status:
+SELECT conservation_status, count(id)
+    FROM animals
+    GROUP BY conservation_status;
+
+24. Query to return average burger cost for all orders that include fries.
+SELECT avg(burger_cost)
+    FROM orders
+    WHERE side ILIKE 'Fries';     # ILIKE ensures case insensitivity
+
+25. Query to return cheapest side order:
+SELECT side_cost
+    FROM orders
+    ORDER BY side_cost
+    DESC LIMIT 1;
+
+SELECT min(side_cost)
+    FROM orders
+    WHERE side IS NOT NULL;
+
+26. Query to return counts of orders that have either fries or onion rings.
+SELECT side, count(id)
+    FROM orders
+    WHERE side ILIKE 'fries'
+    OR side ILIKE 'onion rings'
+    GROUP BY side;
+
+27. Add columns to table and fill all rows and fill only certain rows:
+ALTER TABLE animals
+    ADD COLUMN phylum varchar(100),
+    ADD COLUMN kingdom varchar(100);
+
+UPDATE animals
+    SET phylum = 'Chordata',
+    SET kingdom = 'Animalia';
+
+ALTER TABLE countries
+    ADD COLUMN continent varchar(50);
+
+UPDATE countries
+    SET continent = 'Europe'
+    WHERE (name = 'France' OR name = 'Germany');
+
+27. Replace data for specific rows:
+UPDATE orders
+    SET drink = 'Lemonade'
+    WHERE id = 5;
+
+UPDATE orders
+    SET side = 'Fries',
+    side_cost = 0.99,
+    customer_loyalty_points = 13,
+    WHERE id = 4;
