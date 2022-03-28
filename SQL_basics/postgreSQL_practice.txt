@@ -309,3 +309,72 @@ VALUES (5, 7),
        (7, 3),
        (8, 5),
        (8, 7);
+
+30. Joins:
+SELECT countries.name, continents.continent_name
+    FROM countries
+    INNER JOIN continents    # could've done a left join instead of an inner join to return the same results
+        ON countries.continent_id = continents.id;
+
+SELECT singers.first_name, singers.last_name, albums.album_name, albums.release_date,
+    FROM singers
+    JOIN albums
+        ON singers.id = albums.singer_id
+    WHERE album.release_date >= '1980-01-01'
+    AND albums.release_date < '1990-01-01'
+    AND singers.deceased = false
+    ORDER BY singers.date_of_birth DESC;
+
+# left join:
+SELECT singers.first_name, singers.last_name
+    FROM singers
+    LEFT JOIN albums
+        ON singers.id = albums.singer_id
+    WHERE albums.id IS NULL;
+
+# subquery (alternative to a join in some cases, but takes longer in postgresql):
+SELECT first_name, last_name
+    FROM singers
+    WHERE id NOT IN (SELECT singer_id FROM albums);
+
+# multiple joins:
+SELECT orders.*, products.*
+    FROM orders
+    JOIN order_items
+        ON orders.id = order_items.order_id
+    JOIN products
+        ON order_items.product_id = products.id;
+
+# aliasing to shorten query length:
+SELECT o.id
+    FROM orders AS o
+    JOIN order_items AS i
+        ON o.id = i.order_id
+    JOIN products AS p
+        ON i.product_id = p.id
+    WHERE p.product_name LIKE 'Fries';
+
+# aliasing to give a descriptor to values returned:
+SELECT DISTINCT c.customer_name AS "Customers who ordered Fries"
+    FROM customers AS c JOIN orders AS o
+        ON c.id = o.customer_id
+    JOIN order_items AS i
+        ON o.id = i.order_id
+    JOIN products AS p
+        ON i.product_id = p.id
+    WHERE p.product_name = 'Fries';
+
+SELECT sum(p.product_cost)
+    FROM customers AS c JOIN orders AS o
+        ON c.id = o.customer_id
+    JOIN order_items AS i
+        ON o.id = i.order_id
+    JOIN products AS p
+        ON i.product_id = p.id
+    WHERE c.customer_name = 'Natasha O''Shea';
+
+SELECT p.product_name, COUNT(i.id)
+    FROM products AS p JOIN order_items AS i
+        ON p.id = i.product_id
+    GROUP BY p.product_name
+    ORDER BY p.product_name ASC;
