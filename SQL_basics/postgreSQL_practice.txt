@@ -457,3 +457,24 @@ ALTER TABLE temperatures
 *create SQL file that contains all SQL commands to recreate
 the schema and data of the weather table:
 pg_dump -d database_name -t weather --inserts > new_file.sql
+
+33. Sequences:
+# establishing a new sequence:
+CREATE SEQUENCE counter;
+
+# retrieving next value in the sequence:
+SELECT nextval('counter');
+
+# deleting a sequence:
+DROP SEQUENCE counter;
+
+# sequence of only even numbers:
+CREATE SEQUENCE even_counter
+    INCREMENT BY 2
+    START WITH 2;   # can't set starting value as 0
+
+# Adding auto-incrementing integer primary key column to a table:
+ALTER TABLE films ADD COLUMN id serial PRIMARY KEY;
+
+# Remove primary key status of a column while keeping the column's values:
+ALTER TABLE films DROP CONSTRAINT films_pkey;
