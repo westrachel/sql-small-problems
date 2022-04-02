@@ -478,3 +478,85 @@ ALTER TABLE films ADD COLUMN id serial PRIMARY KEY;
 
 # Remove primary key status of a column while keeping the column's values:
 ALTER TABLE films DROP CONSTRAINT films_pkey;
+
+34. More practice working with multiple tables:
+# Find the number of different customers that bought tickets to >= 1 event
+SELECT count(DISTINCT customers.id)
+    FROM customers
+    INNER JOIN tickets
+        ON customers.id = tickets.customer_id;
+
+# Return the % of customers in database that bought a ticket to >= 1 event
+# approach:
+#   > left join customers table with the tickets table to return a row for every
+#      customer_id and their associated ticket
+#    <=> each row associated with a customer that hasn't purchased a ticket
+#          will have their corresponding ticket's customer_id column filled with NULL
+SELECT concat(CAST(round(count(DISTINCT tickets.customer_id) /
+                         count(DISTINCT customers.id)::decimal * 100, 2) AS text), '%')
+        AS pct_customers_that_purchased
+    FROM customers
+    LEFT OUTER JOIN tickets
+        ON tickets.customer_id = customers.id;
+
+# Return the all unique event names & number of tickets sold for that respective event
+# approach:
+#  > events table has unique id column that's referenced as a foreign key in the tickets table
+#  > left join from tickets table would return a row for each unique ticket id
+SELECT tickets.id AS ticket_id, events.id AS event_id, events.name
+    FROM tickets
+    LEFT OUTER JOIN events
+        ON tickets.event_id = events.id;
+
+#  > returned table from the join needs to be rolled up to the unique event level to calc
+#     the number of tickets sold for a specific event
+SELECT events.name, count(DISTINCT tickets.id) AS popularity
+    FROM tickets
+    LEFT OUTER JOIN events
+        ON tickets.event_id = events.id
+    GROUP BY events.id
+    ORDER BY popularity DESC;
+
+# Return customer id, email, and # of events attended for customers that have bought tickets
+#  for 3 events
+# approach:
+#   > tickets relation has event_id column, so only need to merge on tickets' table info to
+#      info from the customer relation (don't need any specific info from the events table)
+#   > left join from the tickets table would keep all unique ticket rows and merge on corresponding
+#        customer info needed for this request, like the customer's email
+#   > a customer can purchase multiple tickets for the same event, so in order to find the customers
+#      that have bought tickets for 3 unique events, will need to count the unique number of event_ids
+#      associated with each customer's tickets after joining the tickets table with the customers table
+
+SELECT customers.id, customers.email, count(DISTINCT tickets.event_id)
+    FROM tickets
+    LEFT JOIN customers
+        ON tickets.customer_id = customers.id
+    GROUP BY customers.id
+    HAVING count(DISTINCT tickets.event_id) = 3;
+
+# Return a list of all tickets bought by a specific customer email including the event name,
+#  the starts_at time, the seat's section name, row, and number
+
+# approach:
+#   > merge customers relation with tickets relation to find all tickets associated
+#       with the particular customer in scope
+#   > tickets relation has event_id and seat_id columns that can be subsequently used
+#      to merge on the relevant event name and event start time from the events relation
+#      and to merge on the row, number, and section_id fields from the seats relation
+#   > using the merged on section_id field, can subsequently merge on the sections table's
+#      name field
+
+SELECT events.name AS event, events.starts_at,
+       sections.name AS section, seats.row, 
+       seats.number AS seat
+    FROM customers
+    INNER JOIN tickets
+        ON customers.id = tickets.customer_id
+    LEFT JOIN seats
+        ON tickets.seat_id = seats.id
+    LEFT JOIN events
+        ON tickets.event_id = events.id
+    LEFT JOIN sections
+        ON seats.section_id = sections.id
+    WHERE customers.email = 'gennaro.rath@mcdermott.co';
