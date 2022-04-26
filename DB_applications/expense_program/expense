@@ -1,0 +1,56 @@
+#! usr/bin/env ruby
+
+require "pg"
+
+puts "Welcome to the Expense Tracker!"
+
+def db_connection
+	PG.connect(dbname: "expenses")
+end
+
+def missing_args?(amt, desc)
+	amt.nil? || desc.nil?
+end
+
+def fix_quotes(memo)
+	memo.include?("'") ? memo.gsub("'", "''") : memo
+end
+
+def show_expenses
+	expenses = db_connection.exec "SELECT * FROM expenses ORDER By created_on ASC;"
+	expenses.each do |tuple|
+		columns = [ tuple["id"].rjust(3),
+							  tuple["created_on"].rjust(10),
+							  tuple["amount"].rjust(12),
+							  tuple["memo"]]
+		puts columns.join(" | ")
+	end
+end
+
+def add_expense(amt, desc)
+	return "You must provide an amount and memo." if missing_args?(amt, desc)
+	final_desc = fix_quotes(desc)
+	time = Date.today
+	statement = "INSERT INTO expenses (amount, memo, created_on) VALUES ($1, $2, $3)"
+	db_connection.exec_params(statement, [amt, final_desc, time])
+end
+
+def help_display
+	puts <<~MSG
+	  An expense recording system
+	  
+	  Commands:
+	  add AMOUNT MEMO [DATE] - record a new expense
+	  clear - delete all expenses
+	  list - list all expenses
+	  delete NUMBER - remove expense with id NUMBER
+	  search QUERY - list expenses with a matching memo field
+	MSG
+end
+
+request = ARGV.first
+case request
+when "list" then show_expenses
+when "add" then add_expense(ARGV[1], ARGV[2])
+else help_display
+end
