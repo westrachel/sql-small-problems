@@ -1,8 +1,8 @@
 #! usr/bin/env ruby
 
 require "pg"
+require "io/console"
 
-puts "Welcome to the Expense Tracker!"
 
 class ExpenseData
 	def initialize
@@ -10,6 +10,30 @@ class ExpenseData
 	end
 
 	def format_sql_query(query_results)
+		return puts("There are no expenses.") if query_results.values.empty?
+		display_num_expenses(query_results)
+		tabulate_expenses(query_results)
+		display_expense_total(query_results)
+	end
+
+	def display_num_expenses(query_results)
+		num_expenses = query_results.ntuples
+		puts case num_expenses
+				 when 1 then "There is 1 expense."
+	       else "There are #{num_expenses} expenses."
+	       end
+	end
+
+	def calc_expense_total(query)
+		query.field_values("amount").map(&:to_f).sum
+	end
+
+	def display_expense_total(query)
+		puts "-" * 80
+		puts "Total #{calc_expense_total(query).to_s.rjust(25)}"
+	end
+
+	def tabulate_expenses(query_results)
 		query_results.each do |tuple|
 			columns = [ tuple["id"].rjust(3),
 								  tuple["created_on"].rjust(10),
@@ -40,10 +64,32 @@ class ExpenseData
 		memo.include?("'") ? memo.gsub("'", "''") : memo
 	end
 
-	def search_expenses(term)
+	def search_expenses_by_term(term)
 		sql = "SELECT * FROM expenses WHERE memo ILIKE $1;"
 		expenses = @connection.exec_params(sql, ["%#{term}%"])
 		format_sql_query(expenses)
+	end
+
+	def search_expenses_by_id(id)
+		sql = "SELECT * FROM expenses WHERE id = $1;"
+		@connection.exec_params(sql, [id])
+	end
+
+	def delete_expense(id)
+		expense = search_expenses_by_id(id)
+		if expense.values.empty?
+			puts "There is no expense with the id '#{id}'."
+		else
+			puts "The following expense has been deleted:"
+			format_sql_query(expense)
+			sql = "DELETE FROM expenses WHERE id = $1;"
+		  @connection.exec_params(sql, [id])
+		end
+	end
+
+	def clear_expenses
+		@connection.exec "DROP TABLE expenses;"
+		puts "All expenses have been deleted."
 	end
 end
 
@@ -61,8 +107,14 @@ class CLI
 			amt = args_arr[0]
 			memo = args_arr[1]
 			@app.add_expense(amt, memo)
+		when "delete"
+			@app.delete_expense(args_arr[1])
+		when "clear"
+			puts "This will remove all expenses. Are you sure? (y/n)"
+			answer = $stdin.getch
+			@app.clear_expenses if answer == "y"
 		when "search"
-			@app.search_expenses(args_arr[1])
+			@app.search_expenses_by_term(args_arr[1])
 		else
 			help_display
 		end
