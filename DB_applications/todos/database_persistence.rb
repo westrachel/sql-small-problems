@@ -12,25 +12,23 @@ class DatabasePersistence
 	end
 
 	def find_list(id)
-		sql = "SELECT * FROM lists WHERE id = $1;"
-		result = query(sql, id)
-		
-		tuple = result.first
-		list_id = tuple["id"].to_i
-
-		{ id: list_id,
-		  name: tuple["name"],
-		  todos: all_todos_in_list(list_id) }
+		todo_status_all_lists.select { |list| list[:id] == id }[0]
 	end
 
-  def all_lists
-  	result = query("SELECT * FROM lists;")
+  def todo_status_all_lists
+    selection = "SELECT lists.id, lists.name AS list_name,
+                    COUNT(case todos.completed when FALSE then 1 else null end) AS count_incomplete_todos,
+                    COUNT(todos.id) AS num_todos
+                    FROM lists LEFT JOIN todos 
+                      ON lists.id = todos.list_id
+                    GROUP BY lists.name, lists.id
+                    ORDER BY list_name;"
+    result = query(selection)
     result.map do |tuple|
-    	list_id = tuple["id"].to_i
-
-    	{ id: list_id,
-    	  name: tuple["name"],
-    	  todos: all_todos_in_list(list_id)	}
+      { id: tuple["id"].to_i,
+        name: tuple["list_name"],
+        num_incomplete_todos: tuple["count_incomplete_todos"].to_i,
+        num_todos: tuple["num_todos"].to_i }
     end
   end
 
@@ -67,8 +65,6 @@ class DatabasePersistence
           new_status, list_id, todo_id)
   end
 
-  private
-
   def all_ids(list)
     list.map { |element| element[:id] }
   end
@@ -79,7 +75,7 @@ class DatabasePersistence
 		result_todos.map do |tuple|
 			{ id: tuple["id"].to_i,
 			  name: tuple["name"],
-			  completed: tuple["completed"] == "t" }
+			  completed: (tuple["completed"] == "t") }
 		end
 	end
 end

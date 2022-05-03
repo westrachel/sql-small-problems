@@ -18,19 +18,11 @@ end
 
 helpers do
   def list_complete?(list)
-    todos_count(list) > 0 && count_incomplete_todos(list) == 0
+    list[:num_todos] == list[:num_incomplete_todos]
   end
 
   def list_class(list)
     "complete" if list_complete?(list)
-  end
-
-  def todos_count(list)
-    list[:todos].size
-  end
-  
-  def count_incomplete_todos(list)
-    list[:todos].count { |todo| !todo[:completed] }
   end
 
   def sort_lists(lists, &block)
@@ -40,11 +32,9 @@ helpers do
     complete_lists.each(&block)
   end
 
-  def sort_todos(todos_list, &block)
+  def sort_todos(todos_list)
     complete_todos, incomplete_todos = todos_list.partition { |todo| todo[:completed] }
-
-    incomplete_todos.each(&block)
-    complete_todos.each(&block)
+    (incomplete_todos + complete_todos).flatten
   end
 end
 
@@ -66,7 +56,7 @@ end
 
 #  view display of all lists
 get "/lists" do
-  @lists = @storage.all_lists
+  @lists = @storage.todo_status_all_lists
   erb :lists, layout: :layout
 end
 
@@ -78,8 +68,9 @@ end
 # view individual list
 get "/lists/:id" do
   @list_id = params[:id].to_i
-
   @list = load_list(@list_id)
+  @todos = @storage.all_todos_in_list(@list_id)
+
   erb :individual_list, layout: :layout
 end
 
@@ -111,7 +102,7 @@ end
 def list_name_as_error(name)
   if !(2..100).cover? name.size
     "List must be between 2 and 100 characters."
-  elsif @storage.all_lists.any? {|list| list[:name] == name }
+  elsif @storage.todo_status_all_lists.any? {|list| list[:name] == name }
     "List name must be unique."
   end
 end
