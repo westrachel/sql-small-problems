@@ -176,3 +176,60 @@ function gcd(arr) {
 gcd([12, 4, 8]);   // 4
 gcd([16, 24, 32]); // 8
 gcd([12, 6]);      // 6
+
+// 6. GoldBach Numbers
+// write a function that logs every pair of prime numbers that sum to the
+// number supplied as an argumnet
+// other requirements:
+//  > log all pairs with the smallest numbe first
+//  > if the argumnet is odd or less than 4 log null
+
+// approach:
+// > immediately return null if the passed in argument is less
+//    than 4 or if it has a remainder when divided by 2 (which
+//     proves it's an odd number)
+// > 2 is the smallest prime number, so declare and initialize
+//     a local variable to 2
+// > start a loop construct and check that the local variable previously
+//    initialized is <= half the size of the passed in argument
+//     > b/c finding pairs that sum to the passed in argument,
+//        only need to increment up to half of the passed in argument
+//     > b/c this will be in an else branch and we already captured
+//        logic for what to do when evaluating an odd sum, there is an
+//        integer halfway point
+// > in the loop declare another local variable that will sum with the other
+//      local variable to the value of the argument passed into the function
+// > check if both of the local variables are prime numbers using previously
+//     defined isPrime() function
+//     > if they are, then log their values
+// > increment one of the local variables by 1 (the local variable that is
+//      used to derive the other local variable's value through subtraction
+//      needs to be incremented)
+function checkGoldbach(expectedSum) {
+  if (expectedSum < 4 || expectedSum % 2 !== 0) {
+    console.log(null);
+  } else {
+    let num = 2;
+
+    while (num < (expectedSum / 2 + 1)) {
+      let addend = expectedSum - num;
+      
+      if (isPrime(num) && isPrime(addend)) {
+        console.log(String(num) + ' ' + String(addend));
+      }
+
+      num += 1;
+    }
+  }
+}
+
+checkGoldbach(4);
+// 2 2
+
+checkGoldbach(100);
+// 3 97
+// 11 89
+// 17 83
+// 29 71
+// 41 59
+// 47 53
