@@ -291,3 +291,217 @@ function startsWith(string, searchString) {
 
   return true;
 }
+
+// 7. Converting String to Lowercase via ASCII table lookups
+// approach:
+// > initialize an empty lower case string (to be returned by the function)
+// > iterate through each of the characters in the string argument
+// > based on the ascii table, uppercase letters have numeric codes ranging
+//  from 65 - 90, so if the numeric conversion of a given character is
+//  outside of that range, then push the character of the string being
+//  iterated over as is to the lower case string; otherwise push the
+//  lower case version of the string using the ascii table numeric conversion
+
+function toLowerCase(string) {
+  const CONVERSION_REQ_UPPER_BOUND = 90;
+  const CONVERSION_REQ_LOWER_BOUND = 65;
+  const ASCII_CONVERSION_ADDEND = 32;
+  let lowerCaseStr = '';
+
+  for (let index = 0; index < string.length; index += 1) {
+    let asciiNum = string.charCodeAt(index);
+
+    if (asciiNum >= CONVERSION_REQ_LOWER_BOUND && asciiNum <= CONVERSION_REQ_UPPER_BOUND) {
+      asciiNum += ASCII_CONVERSION_ADDEND;
+      lowerCaseStr += String.fromCharCode(asciiNum);
+    } else {
+      lowerCaseStr += string[index];
+    }
+  }
+
+  return lowerCaseStr;
+}
+
+toLowerCase('ALPHABET');  // "alphabet"
+toLowerCase('123');       // "123"
+toLowerCase('abcDEF');    // "abcdef"
+
+// 8. Substring Pt 1
+// write a function that returns a substring based on subsetting the given 
+// string w/ the index & length arguments
+
+// requirements:
+// > negative lengths are possible but should return an empty string in those
+//    cases
+// > length can be greater than the string's length, but there should be no
+//    circular looping over the string to account for the longer length argument
+//    <=> just return a substring that goes until the end of the given string
+//       if the length argument exceeds the length of the given string
+
+// approach:
+// > assign a starting index variable that is equal to the 2nd argument unless the
+//   2nd argument is negative, in which case the variable should equal the 2nd
+//   argument plus the 1st string argument's length
+// > find the ending index of the substring
+//    > need to cap the ending index at the largest index available, which is found
+//       by substracting 1 from the string's length
+//    > the ending index, if not capped, should be equal to the index variable's value
+//       previously found plus the length 3rd argument passed in minus 1
+// > initialize a variable whose value is an empty string
+// > iterate through the characters in the string starting from the index position that
+//    corresponds with the index variable's integer value to the index position that
+//    corresponds with the ending index variable's value
+//     > on each iteratin push the string argument's character at the current index
+//        position to the substring
+function substr(string, start, length) {
+  let index = (start < 0 ? string.length + start : start);
+  let endIndex = Math.min(...[index + length - 1, string.length - 1]);
+  let substring = '';
+
+  while (index <= endIndex) {
+    substring += string[index];
+    index += 1;
+  }
+
+  return substring;
+}
+
+substr('hello world', 2, 4);     // "llo "
+substr('hello world', -3, 2);    // "rl"
+substr('hello world', 8, 20);    // "rld"
+substr('hello world', 0, -20);  // ""
+substr('hello world', 0, 0);    // ""
+
+// 9. Substring Pt 2
+// write a function that returns a substring of the given string argument
+// requirements:
+// > if start & end arguments are positive & start < end & both indices are
+//     in bounds for the given string, then return the substring from the
+//     [start index, end index)
+// > if start > end, then return the string [end index, start index)
+// > if start === end, return an empty string
+// > if end argument isn't provided then return the substring from the start
+//    index through to the end of the string
+// > if start or end are less than 0 or isn't a number then treat them as 0
+// > if start or end are greater than the length of the string, treat them as
+//     equal to the string length
+
+function prepIndex(length, index) {
+  if (index > length || index === undefined) {
+    return length;
+  } else if (index < 0 || typeof index !== "number") {
+    return 0;
+  } else {
+    return index;
+  }
+}
+
+function substring(string, start, end) {
+  let startIdx = prepIndex(string.length, start);
+  let endIdx = prepIndex(string.length, end);
+
+  let trueStart = Math.min(...[startIdx, endIdx]);
+  let trueEnd = Math.max(...[startIdx, endIdx]);
+
+  if (trueStart !== trueEnd) {
+    return string.slice(trueStart, trueEnd);
+  } else {
+    return "";
+  }
+
+}
+
+substring('hello world', 2, 4);    // "ll"
+substring('hello world', 4, 2);    // "ll"
+substring('hello world', 0, -1);   // ""
+substring('hello world', 2);      // "llo world"
+substring('hello world', 'a');    // "hello world"
+substring('hello world', 8, 20);   // "rld"
+
+// 10. Rot13
+// write a function, rot13, that takes a String and returns that string transformed
+//   by the ro13 cipher
+// requirements:
+// > if character is a letter in the modern English alphabet, change it to the
+//  character 13 positions later in the alphabet
+//     > ex: a becomes n
+// > if reach end of the alphabet, return to the beginning (so o, becomes b)
+// > letter transformations should preserve case (A -> N, a -> n)
+// > don't modify characters that are not letters
+
+// approach:
+// > uppercase letters in ascii table correspond with the numeric codes:
+//      [65, 90] ("A" -> "Z")
+// > lowercase letters in ascii table correspond with the numeric codes:
+//      [97, 122] ("a" -> "z")
+// > initialize a translated string variable with an empty string that converted
+//    characters will be pushed to (or non-converted non-alphabetical characters will
+//    be pushed to)
+// > iterate through the characters of the given string argument
+//     > if the character isn't an alphabetical letter that matches against
+//        the regex /[A-Za-z]/ then push the character as is to the translated string
+//        variable
+//     > if the character does match an alphabetical letter, then establish whether
+//        it's uppercased or not
+//        > if uppercased, find an array of asciiNumCodes that correspond with "A" -> "Z"
+//        > if lowercased, find an array of asciiNumCodes that correspond with "a" -> "z"
+//          <=> this array represents the range of acceptable asciiNumCodes that the current
+//             character's asciiNumCode shifted 13 places should fall within (***)
+//     > initialize a proposed asciiNumCode that corresponds with the asciiNumCode of 
+//        the current character being iterated over plus 13
+//     > check if the proposed ascii number falls within the range of numbers in the array
+//       identified under (***) above
+//     > if the proposed ascii number is out of bounds, then find the difference between the
+//        proposed ascii number code and the max number in the relevent asciiNumCodes array
+//          > subtract 1 from this difference to find the addend amount that should be
+//            added onto the minimum number in the array of relevant asciiNumCodes
+//     > push to the translated string variable the string character value associated with the
+//         prepped proposed asciiNumCode
+// > after the loop finishes return the translated string variable's value
+function createArrayOfNums(size, startingNumber) {
+  return Array(size).fill(0).map((_, num) => num + startingNumber);
+}
+
+function shiftLetter(upperOrLower, letter) {
+  let proposedAsciiNum = letter.charCodeAt(0) + 13;
+  let firstLetter = upperOrLower === 'uppercase' ? 'A' : 'a';
+  const ABC_SIZE = 26;
+
+  const RANGE = createArrayOfNums(ABC_SIZE, firstLetter.charCodeAt(0));
+
+  if (RANGE.includes(proposedAsciiNum)) {
+    return String.fromCharCode(proposedAsciiNum);
+  } else {
+    let addend = proposedAsciiNum - Math.max(...RANGE) - 1;
+    proposedAsciiNum = Math.min(...RANGE) + addend;
+    return String.fromCharCode(proposedAsciiNum);
+  }
+  
+}
+
+function shiftLetterOrStay(letter) {
+  if (letter.match(/[a-z]/)) {
+    return shiftLetter('lowercase', letter);
+  } else if (letter.match(/[A-Z]/)) {
+    return shiftLetter('uppercase', letter);
+  } else {
+    return letter;
+  }
+
+}
+
+function rot13(string) {
+  let translatedString = '';
+
+  for (let index = 0; index < string.length; index += 1) {
+    translatedString += shiftLetterOrStay(string[index]);
+  }
+
+  return translatedString;
+}
+
+console.log(rot13('Teachers open the door, but you must enter by yourself.'));
+// Grnpuref bcra gur qbbe, ohg lbh zhfg ragre ol lbhefrys.
+
+console.log(rot13(rot13('Teachers open the door, but you must enter by yourself.')));
+//Teachers open the door, but you must enter by yourself.
