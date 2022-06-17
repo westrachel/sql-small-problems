@@ -174,26 +174,3 @@ function concat(...values) {
 concat([1, 2, 3], [4, 5, 6], [7, 8, 9]);    // [1, 2, 3, 4, 5, 6, 7, 8, 9]
 concat([1, 2], 'a', ['one', 'two']);        // [1, 2, "a", "one", "two"]
 concat([1, 2], ['three'], 4);               // [1, 2, "three", 4]
-
-// 8. Array comparison
-// write a function that returns a boolean specifying if the arrays contain
-// the same values
-// reqs:
-// > based on test cases, only comparing elements at non-negative integer indices
-function counts(arr, element) {
-  
-}
-
-function areArraysEqual(array1, array2) {
-  
-}
-
-areArraysEqual([1, 2, 3], [1, 2, 3]);                  // true
-areArraysEqual([1, 2, 3], [3, 2, 1]);                  // true
-areArraysEqual(['a', 'b', 'c'], ['b', 'c', 'a']);      // true
-areArraysEqual(['1', 2, 3], [1, 2, 3]);                // false
-areArraysEqual([1, 1, 2, 3], [3, 1, 2, 1]);            // true
-areArraysEqual([1, 2, 3, 4], [1, 1, 2, 3]);            // false
-areArraysEqual([1, 1, 2, 2], [4, 2, 3, 1]);            // false
-areArraysEqual([1, 1, 2], [1, 2, 2]);                  // false
-areArraysEqual([1, 1, 1], [1, 1]);                     // false

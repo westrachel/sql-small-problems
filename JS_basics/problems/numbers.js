@@ -233,3 +233,85 @@ checkGoldbach(100);
 // 29 71
 // 41 59
 // 47 53
+
+
+// 7. Convert strings to integers
+// requirements:
+// > can assume only numeric input
+// > can assume not decimlals
+// > don't need to worry about leading + / - sign
+//     <=> so only positive strings in scope
+
+// approach for finidng multiplier:
+  // if length is 1, then multiplier is 1
+  // if length is 2, then multiplier is 10
+  // if length is 3, then multiplier is 100
+  // if length is 4, then multiplier is 1000
+  // if length is n, then multiplier is 10^(n - 1)
+function stringToInteger(string) {
+  const STRING_TO_NUM = {
+    '0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5,
+    '6': 6, '7': 7, '8': 8, '9': 9
+  }
+  
+  let total = 0;
+  let exponent = string.length - 1;
+
+  for (let index = 0; index < string.length; index += 1) {
+    let multiplier = Math.pow(10, exponent);
+
+    total += STRING_TO_NUM[string[index]] * multiplier;
+    exponent -= 1;
+  }
+  
+  return total;
+}
+
+stringToInteger('4321');      // 4321
+stringToInteger('570');       // 570
+
+// 8. Convert A String to A Signed Number
+function stringToSignedInteger(string) {
+  let sign = string[0];
+
+  if (sign === '+') {
+    return stringToInteger(string.slice(1, string.length));
+  } else if (sign === '-') {
+    return -1 * stringToInteger(string.slice(1, string.length));
+  } else {
+    return stringToInteger(string);
+  }
+
+}
+
+stringToSignedInteger('4321');      // 4321
+stringToSignedInteger('-570');      // -570
+stringToSignedInteger('+100');      // 100
+
+// 9. Convert a Number to a String
+// can assume a positive integer or 0 as an intput
+function reverse(string) {
+  return string.split('').reverse().join('');
+}
+
+function integerToString(integer) {
+  const NUM_TO_STRING = {
+    0: '0', 1: '1', 2: '2', 3: '3', 4: '4', 5: '5',
+    6: '6', 7: '7', 8: '8', 9: '9'
+  }
+
+  let numberString = '';
+
+  do {
+    let remainder = integer % 10;
+    integer = Math.floor(integer / 10);
+
+    numberString += NUM_TO_STRING[remainder];
+  } while (integer > 0);
+
+  return reverse(numberString);
+}
+
+integerToString(4321);      // "4321"
+integerToString(0);         // "0"
+integerToString(5000);      // "5000"

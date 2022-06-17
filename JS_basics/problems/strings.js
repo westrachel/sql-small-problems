@@ -505,3 +505,44 @@ console.log(rot13('Teachers open the door, but you must enter by yourself.'));
 
 console.log(rot13(rot13('Teachers open the door, but you must enter by yourself.')));
 //Teachers open the door, but you must enter by yourself.
+
+// 11. Character Count
+// write a function that returns an object of key-value pairs specifying the # of
+//  instances of characters in the string argument
+// requirements:
+// > character counts are returned only for characters with >= 2 instances
+// > 'unique characters' are not case-sensitive
+// > keys are lowercased versions of the characters
+function characterCounts(string) {
+  let counts = {};
+  for (let idx = 0; idx < string.length; idx += 1) {
+    let letter = string[idx].toLowerCase();
+
+    if (Object.keys(counts).includes(letter)) {
+      counts[letter] += 1;
+    } else {
+      counts[letter] = 1;
+    }
+  }
+
+  return counts;
+}
+
+function repeatedCharacters(string) {
+  let letterCounts = characterCounts(string);
+
+  for (let letter in letterCounts) {
+    if (letterCounts[letter] < 2) {
+      delete letterCounts[letter];
+    }
+  }
+
+  console.log(letterCounts);
+  return letterCounts;
+}
+
+repeatedCharacters('Programming');    // { r: 2, g: 2, m: 2 }
+repeatedCharacters('Combination');    // { o: 2, i: 2, n: 2 }
+repeatedCharacters('Pet');            // {}
+repeatedCharacters('Paper');          // { p: 2 }
+repeatedCharacters('Baseless');       // { s: 3, e: 2 }
