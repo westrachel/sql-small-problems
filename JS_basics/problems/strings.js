@@ -546,3 +546,77 @@ repeatedCharacters('Combination');    // { o: 2, i: 2, n: 2 }
 repeatedCharacters('Pet');            // {}
 repeatedCharacters('Paper');          // { p: 2 }
 repeatedCharacters('Baseless');       // { s: 3, e: 2 }
+
+// 12. Concatenation
+// write a function that accepts 2 string arguments and 
+// deterimines the shorter of the 2 strings and then
+// returns the shorter string concatenated w/ the longer
+// string concatenated again w/ the shorter string
+// can assume varying lengths
+function shortLongShort(str1, str2) {
+  let short = str1.length < str2.length ? str1 : str2;
+  let long = short === str1 ? str2 : str1;
+
+  return short + long + short;
+}
+
+shortLongShort('abc', 'defgh');    // "abcdefghabc"
+shortLongShort('', 'xyz');         // "xyz"
+
+// 13. UTF-16 String Value
+function utf16Value(string) {
+  let total = 0;
+
+  for (let index = 0; index < string.length; index += 1) {
+    total += string.charCodeAt(index);
+  }
+
+  return total;
+}
+utf16Value('Four score');         // 984
+utf16Value('Launch School');      // 1251
+utf16Value('a');                  // 97
+utf16Value('');                   // 0
+
+// 14. De-duplicate consecutives
+// write a function that removes duplicate instances of
+// the same consecutive character
+function crunch(string) {
+  let deDupped = '';
+
+  for (let index = 0; index < string.length; index += 1) {
+    let prior = string[index - 1];
+    let current = string[index];
+    
+    if (current != prior) {
+      deDupped += current;
+    }
+  }
+
+  return deDupped;
+}
+crunch('ddaaiillyy ddoouubbllee');    // "daily double"
+crunch('4444abcabccba');              // "4abcabcba"
+crunch('ggggggggggggggg');            // "g"
+crunch('a');                          // "a"
+crunch('');                           // ""
+
+// 15. Binary
+// write a function that returns a string of 1s and 0s
+// whose length matches the number argument
+function stringy(number) {
+  const EVEN = "1";
+  const ODD = "0";
+  let binaryString = '';
+
+  for (let index = 0; index < number; index += 1) {
+    if (index % 2 === 0) {
+      binaryString += EVEN;
+    } else {
+      binaryString += ODD;
+    }
+  }
+
+  return binaryString;
+}
+stringy(6);    // "101010"

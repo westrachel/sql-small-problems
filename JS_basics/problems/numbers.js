@@ -315,3 +315,84 @@ function integerToString(integer) {
 integerToString(4321);      // "4321"
 integerToString(0);         // "0"
 integerToString(5000);      // "5000"
+
+// 10. Convert a Signed Number to a String
+function signedIntegerToString(num) {
+  if (num > 0) {
+    return '+' + integerToString(num);
+  } else if (num < 0) { 
+    return '-' + integerToString(-num);
+  } else {
+    return integerToString(num);
+  }
+
+}
+
+signedIntegerToString(4321);      // "+4321"
+signedIntegerToString(-123);      // "-123"
+signedIntegerToString(0);         // "0"
+
+// 11. Leap Year
+// determine if the numerical year value corresponds
+// with a leap year or not & return a boolean
+function isLeapYear(year) {
+  if (year % 400 === 0) {
+    return true;
+  } else if (year % 100 === 0) {
+    return false;
+  } else {
+    return year % 4 === 0;
+  }
+}
+
+isLeapYear(2016);      // true
+isLeapYear(2015);      // false
+isLeapYear(2100);      // false
+isLeapYear(2400);      // true
+isLeapYear(1752);      // true
+isLeapYear(1700);      // false
+
+// 12. Sum of multiples
+// write a function that calculates the total of all
+// numbers between 1 and the passed in argument that
+// are multiples of 3 or 5
+function multisum(number) {
+  let total = 0;
+
+  for (let num = 0; num <= number; num += 1) {
+    if (num % 3 === 0 || num % 5 === 0) {
+      total += num;
+    }
+  }
+
+  return total;
+}
+
+multisum(3);       // 3
+multisum(5);       // 8
+multisum(1000);    // 234168
+
+// 13. Fibonacci Index
+// write a function that returns the index location of
+// the place in the fibonacci sequence that has the
+// first number with the number of digits passed into
+// the function as an argument
+function findFibonacciIndexByLength(digits) {
+  let num1 = 1;
+  let num2 = 1;
+  let count = 2;
+  let fibonacci;
+
+  do {
+    fibonacci = num1 + num2;
+    count += 1;
+    num1 = num2;
+    num2 = fibonacci;
+
+  } while (String(fibonacci).length < digits);
+
+  return count;
+}
+
+findFibonacciIndexByLength(2) === 7;    // 1 1 2 3 5 8 13
+findFibonacciIndexByLength(3) === 12;   // 1 1 2 3 5 8 13 21 34 55 89 144
