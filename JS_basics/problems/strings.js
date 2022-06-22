@@ -620,3 +620,73 @@ function stringy(number) {
   return binaryString;
 }
 stringy(6);    // "101010"
+
+// 16. Doubles
+// write a function that returns 2x the argument input
+// or returns the number as is if it's a double number
+function twice(num) {
+  let strNum = String(num);
+  let half1 = strNum.split('').slice(0, strNum.length / 2).join('');
+  let half2 = strNum.split('').slice(strNum.length / 2, strNum.length).join('');
+
+  let value = (half1 == half2 ? num : 2 * num);
+  return value;
+}
+
+twice(37);          // 74
+twice(44);          // 44
+twice(103103);      // 103103
+twice(3333);        // 3333
+twice(7676);        // 7676
+
+// 17. String CleanUp
+// write a function that takes a string and replaces all non-alphabetic
+// characters with space characters
+// requirement: there shouldn't be 2 consecutive space characters
+function cleanUp(string) {
+  let preppedStr = '';
+
+  for (let idx = 0; idx < string.length; idx += 1) {
+    let last = idx === 0 ? 'a' : string[idx - 1];
+    let current = string[idx];
+
+    if (current.match(/[A-Za-z]/)) {
+      preppedStr += current; 
+    } else if (last.match(/[A-Za-z]/) != null) {
+      preppedStr += ' ';
+    }
+  }
+
+  return preppedStr;
+}
+cleanUp("---what's my +*& line?");  // " what s my line "
+
+// 18. Palindrome
+// write a function that returns a boolean indicating whether or not the
+// passed in string is a palindrome (case matters)
+function isPalindrome(string) {
+  let midIdx;
+  let endIdx = string.length - 1;
+
+  if (string.length % 2 !== 0) {
+    midIdx = Math.floor(string.length / 2);
+  } else {
+    midIdx = string.length - 2;
+  }
+
+  for (let idx = 0; idx <= endIdx; idx += 1) {
+    if (string[idx] != string[endIdx]) {
+      return false;
+    }
+
+    endIdx -= 1;
+  }
+
+  return true;
+}
+isPalindrome('madam');      // true
+isPalindrome('Madam');      // false (case matters)
+isPalindrome("madam i'm adam");      // false (all characters matter)
+isPalindrome('356653');     // true
+isPalindrome('maddam');     // true
+isPalindrome('racecar');    // true

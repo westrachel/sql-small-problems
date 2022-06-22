@@ -396,3 +396,68 @@ function findFibonacciIndexByLength(digits) {
 
 findFibonacciIndexByLength(2) === 7;    // 1 1 2 3 5 8 13
 findFibonacciIndexByLength(3) === 12;   // 1 1 2 3 5 8 13 21 34 55 89 144
+
+// 14. What Century Is It
+// write a function that takes a number & returns the century in string format
+function century(year) {
+  const SUFFIX = { 
+    '1': 'st', '2': 'nd', '3': 'rd', '4': 'th',
+    '5': 'th', '6': 'th', '7': 'th', '8': 'th',
+    '9': 'th', '0': 'th',
+  }
+  let century = String(Math.ceil(year / 100));
+  let lastTwoDigits = century.split('').slice(century.length - 2, century.length).join('');
+
+  if (["11", "12", "13"].includes(lastTwoDigits)) {
+    century += 'th';
+  } else {
+    century += SUFFIX[century[century.length - 1]];
+  }
+
+  return century;
+}
+
+century(2000);        // "20th"
+century(2001);        // "21st"
+century(1965);        // "20th"
+century(256);         // "3rd"
+century(5);           // "1st"
+century(10103);       // "102nd"
+century(1052);        // "11th"
+century(1127);        // "12th"
+century(11201);       // "113th"
+
+// 15. Right Triangles
+// write a function that takes an integer argument repesenting
+// the length of the sides of a right triangle and writes to the
+// console stars forming the right triangle
+// can assume that input is >= 1
+function triangle(digits) {
+  let numSpaces = digits - 1;
+  let numStars = 1;
+
+  while (numSpaces >= 0) {
+    let row = ' '.repeat(numSpaces) + '*'.repeat(numStars);
+    console.log(row);
+    numSpaces -= 1;
+    numStars += 1;
+  }
+}
+
+triangle(5);
+//    *
+//   **
+//  ***
+// ****
+//*****
+
+triangle(9);
+//        *
+//       **
+//      ***
+//     ****
+//    *****
+//   ******
+//  *******
+// ********
+//*********
