@@ -661,7 +661,7 @@ function cleanUp(string) {
 }
 cleanUp("---what's my +*& line?");  // " what s my line "
 
-// 18. Palindrome
+// 18. Palindrome Part 1
 // write a function that returns a boolean indicating whether or not the
 // passed in string is a palindrome (case matters)
 function isPalindrome(string) {
@@ -690,3 +690,148 @@ isPalindrome("madam i'm adam");      // false (all characters matter)
 isPalindrome('356653');     // true
 isPalindrome('maddam');     // true
 isPalindrome('racecar');    // true
+
+// 19. Palindrome Part 2
+// write a function that checks for valid palindromes that ignores
+// the case of characters and that ignores non-alphanumeric characters
+function isRealPalindrome(string) {
+  let stringToCheck = '';
+
+  for (let idx = 0; idx < string.length; idx += 1) {
+    if (string[idx].match(/[A-Za-z0-9]/)) {
+      stringToCheck += string[idx].toLocaleLowerCase();
+    }
+  }
+
+  return isPalindrome(stringToCheck);
+}
+
+isRealPalindrome('madam');               // true
+isRealPalindrome('Madam');               // true (case does not matter)
+isRealPalindrome("Madam, I'm Adam");     // true (only alphanumerics matter)
+isRealPalindrome('356653');              // true
+isRealPalindrome('356a653');             // true
+isRealPalindrome('123ab321');            // false
+
+// 20. Letter Swap
+// write a function that accepts a string input of words and returns
+// a new string that has swapped the first and last letter of each word
+// valid assumptions:
+// > every word contains at least one letter
+// > string will always contain at least one word
+// > each string contains nothing but words and spaces
+// > there are no leading, trailing, or repeated spaces
+function swap(string) {
+  let words = string.split(' ');
+  let swappedWords = [];
+
+  for (let wordIdx = 0; wordIdx < words.length; wordIdx += 1) {
+    let word = words[wordIdx];
+    if (word.length > 1){  
+      let swappedWord = word[word.length - 1];
+      let totalIterations = word.length - 2;
+  
+      for (let strIdx = 1; strIdx <= totalIterations; strIdx += 1) {
+        swappedWord += word[strIdx];
+      }
+      
+      swappedWord += word[0];
+      swappedWords.push(swappedWord);
+      swappedWord = '';
+    } else {
+      swappedWords.push(word);
+    }
+  }
+
+  return swappedWords.join(' ');
+}
+
+// refactor using Array.prototype.map
+function swapFirstLastCharacters(word) {
+  if (word.length === 1) {
+    return word;
+  }
+
+  return word[word.length - 1] + word.slice(1, -1) + word[0];
+}
+
+function swap(string) {
+  let words = string.split(' ');
+  let swappedWords = words.map(word => swapFirstLastCharacters(word));
+
+  return swappedWords.join(' ');
+}
+swap('Oh what a wonderful day it is');  // "hO thaw a londerfuw yad ti si"
+swap('Abcde');                          // "ebcdA"
+swap('a');                              // "a"
+
+// 21. Letter Counter Part 1
+// write a function that accepts a string and returns an object that contains
+// counts of the # of words that have specific letter counts
+// > a word consist of any sequence of non-space characters
+function wordSizes(string) {
+  let counts = {};
+  let words = string.split(' ');
+
+  for (let idx = 0; idx < words.length; idx += 1) {
+    let word = words[idx];
+    let key = word.length;
+
+    if (key === 0) {
+      continue;
+    } else if (counts.hasOwnProperty(String(key))) {
+      counts[String(key)] += 1;
+    } else {
+      counts[String(key)] = 1;
+    }
+  }
+
+  return counts;
+}
+
+wordSizes('Four score and seven.');                       // { "3": 1, "4": 1, "5": 1, "6": 1 }
+wordSizes('Hey diddle diddle, the cat and the fiddle!');  // { "3": 5, "6": 1, "7": 2 }
+wordSizes("What's up doc?");                              // { "2": 1, "4": 1, "6": 1 }
+wordSizes('');                                            // {}
+
+// 22. Letter Counter Part 2
+// modify the prior function to exclude non-letters when calculating word size
+function scrubWord(word) {
+  let scrubbed = '';
+
+  for (let idx = 0; idx < word.length; idx += 1) {
+    let letter = word[idx];
+
+    if (letter.match(/[A-Za-z]/)) {
+      scrubbed += letter;
+    }
+
+  }
+
+  return scrubbed;
+}
+
+function strictWordSizes(string) {
+  let counts = {};
+  let words = string.split(' ');
+
+  for (let idx = 0; idx < words.length; idx += 1) {
+    let word = scrubWord(words[idx]);
+    let key = word.length;
+
+    if (key === 0) {
+      continue;
+    } else if (counts.hasOwnProperty(String(key))) {
+      counts[String(key)] += 1;
+    } else {
+      counts[String(key)] = 1;
+    }
+  }
+
+  return counts;
+}
+
+strictWordSizes('Four score and seven.');    // { "3": 1, "4": 1, "5": 2 }
+strictWordSizes('Hey diddle diddle, the cat and the fiddle!');  // { "3": 5, "6": 3 }
+strictWordSizes("What's up doc?");    // { "5": 1, "2": 1, "3": 1 }
+strictWordSizes('');   // {}

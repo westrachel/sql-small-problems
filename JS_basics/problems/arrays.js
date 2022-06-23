@@ -174,3 +174,24 @@ function concat(...values) {
 concat([1, 2, 3], [4, 5, 6], [7, 8, 9]);    // [1, 2, 3, 4, 5, 6, 7, 8, 9]
 concat([1, 2], 'a', ['one', 'two']);        // [1, 2, "a", "one", "two"]
 concat([1, 2], ['three'], 4);               // [1, 2, "three", 4]
+
+// 8. Running Totals
+// write a function that accepts an array argument and returns a new array
+// whose values represent the running total of the sum of elements in the
+// passed in array
+function runningTotal(array) {
+  let totals = [];
+  let total = 0;
+
+  for (let idx = 0; idx < array.length; idx += 1) {
+    total += array[idx];
+    totals.push(total);
+  }
+
+  return totals;
+}
+
+runningTotal([2, 5, 13]);             // [2, 7, 20]
+runningTotal([14, 11, 7, 15, 20]);    // [14, 25, 32, 47, 67]
+runningTotal([3]);                    // [3]
+runningTotal([]);                     // []
