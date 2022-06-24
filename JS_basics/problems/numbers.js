@@ -462,3 +462,61 @@ triangle(9);
 // ********
 //*********
 
+// 16. Reverse A Number
+// drop any leading zeros
+function reverseNumber(num) {
+  let reversed = '';
+  let strNum = String(num);
+
+  for (let idx = strNum.length - 1; idx >= 0; idx -= 1) {
+    reversed += strNum[idx];
+  }
+
+  return Number(reversed);
+}
+
+reverseNumber(12345);    // 54321
+reverseNumber(12000);    // 21
+reverseNumber(1);        // 1
+
+// 17. Angles to Degrees, Minutes, & Seconds
+function addLeadingZero(number) {
+  return (number < 10 ? "0" + String(number) : String(number));
+}
+
+function findSmallerUnits(unit, strDecimal, roundFlag) {
+  let num = Number("." + strDecimal) * 60;
+  if (roundFlag) {
+    num = Math.floor(num);
+  }
+
+  num = addLeadingZero(num);
+  return num + unit;
+}
+
+function dms(angle) {
+  let strAngle = String(angle);
+
+  if (!strAngle.includes(".")) {
+    return strAngle + "°00'" + '00"';
+  }
+
+  let degs = strAngle.split('.')[0] + "°";  
+  let mins = findSmallerUnits('', strAngle.split('.')[1], false);
+
+  if (!mins.includes(".")) {
+    return degs + mins + "'" + '00"';
+  }
+
+  let secs = mins.split('.')[1];
+  mins = mins.split('.')[0] + "'";
+  secs = findSmallerUnits('"', secs, true);
+
+  return degs + mins + secs;
+}
+dms(30);           // 30°00'00"
+dms(76.73);        // 76°43'48"
+dms(254.6);        // 254°35'59"
+dms(93.034773);    // 93°02'05"
+dms(0);            // 0°00'00"
+dms(360);          // 360°00'00" or 0°00'00"

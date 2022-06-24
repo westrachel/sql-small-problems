@@ -835,3 +835,74 @@ strictWordSizes('Four score and seven.');    // { "3": 1, "4": 1, "5": 2 }
 strictWordSizes('Hey diddle diddle, the cat and the fiddle!');  // { "3": 5, "6": 3 }
 strictWordSizes("What's up doc?");    // { "5": 1, "2": 1, "3": 1 }
 strictWordSizes('');   // {}
+
+// 23. Double Every Character in a Given String
+function repeater(string) {
+  let doubled = '';
+
+  for (let idx = 0; idx < string.length; idx += 1) {
+    doubled += string[idx].repeat(2);
+  }
+
+  return doubled;
+}
+repeater('Hello');        // "HHeelllloo"
+repeater('');             // ""
+
+// 24. Double Every Consonant in a String
+function doubleConsonants(string) {
+  let doubled = '';
+
+  for (let idx = 0; idx < string.length; idx += 1) {
+    let char = string[idx];
+    if (char.match(/[A-DF-HJ-NP-TV-XZ]/i) ) {
+      doubled += char.repeat(2);
+    } else {
+      doubled += char;
+    }
+  }
+
+  return doubled;
+}
+
+doubleConsonants('String');          // "SSttrrinngg"
+doubleConsonants('Hello-World!');    // "HHellllo-WWorrlldd!"
+doubleConsonants('July 4th');        // "JJullyy 4tthh"
+doubleConsonants('');                // ""
+
+// 25. Return the middle character(s) of a given string
+function centerOf(string) {
+  if (string.length % 2 == 0) {
+    let idx2 = string.length / 2;
+    let idx1 = idx2 - 1;
+    return string[idx1] + string[idx2];
+  } else {
+    let index = Math.floor(string.length / 2);
+    return string[index];
+  }
+}
+centerOf('I Love JavaScript'); // "a"
+centerOf('Hello World');     // " "
+centerOf('Launch');            // "un"
+centerOf('x');                 // "x"
+
+// 26. Reverse the Words
+// > reverse words that are 5 characters or longer
+// > words are separated by single spaces
+function reverseWords(string) {
+  let reversed = '';
+  let words = string.split(' ');
+
+  for (let idx = 0; idx < words.length; idx += 1) {
+    let word = words[idx];
+    reversed += (word.length >= 5 ? word.split('').reverse().join('') : word);
+
+    if (idx + 1 < words.length){
+      reversed += ' '; 
+    }
+  }
+
+  return reversed;
+}
+reverseWords('Professional');             // "lanoisseforP"
+reverseWords('Walk around the block');    // "Walk dnuora the kcolb"
