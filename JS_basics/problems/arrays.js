@@ -195,3 +195,165 @@ runningTotal([2, 5, 13]);             // [2, 7, 20]
 runningTotal([14, 11, 7, 15, 20]);    // [14, 25, 32, 47, 67]
 runningTotal([3]);                    // [3]
 runningTotal([]);                     // []
+
+// 9. Union
+// write a function that accepts 2 array arguments and returns
+// a new array containing only the union of elements from both
+// there shouldn't be any repeat values in the returned array
+function addToArray(newArr, values) {
+  for(let idx = 0; idx < values.length; idx += 1) {
+    if (!newArr.includes(values[idx])) {
+      newArr.push(values[idx]);
+    }
+  }
+
+  return newArr;
+}
+
+function union(arr1, arr2) {
+  let combo = addToArray([], arr1);
+  combo = addToArray(combo, arr2);
+
+  return combo;
+}
+
+union([1, 3, 5], [3, 6, 9]);    // [1, 3, 5, 6, 9]
+
+// 10. Halvsies
+// write a function that splits a given array argument into 2 separate
+// arrays
+function halvsies(array) {
+  let midpoint = Math.ceil(array.length / 2);
+  let firstArr = [];
+  let secondArr = [];
+
+  for (let idx = 0; idx < midpoint; idx += 1) {
+    firstArr.push(array[idx]);
+  }
+
+  for (let idx = midpoint; idx < array.length; idx += 1) {
+    secondArr.push(array[idx]);
+  }
+
+  return [firstArr, secondArr];
+}
+
+halvsies([1, 2, 3, 4]);       // [[1, 2], [3, 4]]
+halvsies([1, 5, 2, 4, 3]);    // [[1, 5, 2], [4, 3]]
+halvsies([5]);                // [[5], []]
+halvsies([]);                 // [[], []]
+
+
+// 11. Find the one duplicate in a given array
+function findDup(array) {
+  let counts = {};
+
+  for (let idx = 0; idx < array.length; idx += 1) {
+    let value = String(array[idx]);
+
+    if (Object.keys(counts).includes(value)) {
+      return array[idx];
+    } else {
+      counts[value] = 1;
+    }
+  }
+
+}
+
+findDup([1, 5, 3, 1]);  // 1
+findDup([18, 9, 36, 96, 31, 19,
+         54, 75, 42, 15, 38, 25,
+         97, 92, 46, 69, 91, 59,
+         53, 27, 14, 61, 90, 81,
+         8, 63, 95, 99, 30, 65,
+         78, 76, 48, 16, 93, 77,
+         52, 49, 37, 29, 89, 10,
+         84, 1, 47, 68, 12, 33,
+         86, 60, 41, 44, 83, 35,
+         94, 73, 98, 3, 64, 82,
+         55, 79, 80, 21, 39, 72,
+         13, 50,  6, 70, 85, 87,
+         51, 17, 66, 20, 28, 26,
+         2, 22, 40, 23, 71, 62,
+         73, 32, 43, 24, 4, 56,
+         7, 34, 57, 74, 45, 11,
+         88, 67, 5, 58]);  // 73
+
+// 12. Alternate lists
+// can assume nonempty arguments + same lengthed arguments
+function interleave(arr1, arr2) {
+  let newArr = [];
+  
+  for (let idx = 0; idx < arr1.length; idx += 1) {
+    newArr.push(arr1[idx]);
+    newArr.push(arr2[idx]);
+  }
+
+  return newArr;
+}
+interleave([1, 2, 3], ['a', 'b', 'c']); // [1, "a", 2, "b", 3, "c"]
+
+// 13. Calc the straight multiplicative avg rounded to 3 
+//  decimals & returned as a string
+function showMultiplicativeAverage(array) {
+  let avg = 1;
+
+  for (let idx = 0; idx < array.length; idx += 1) {
+    avg *= array[idx];
+  }
+
+  avg /= array.length;
+
+  return avg.toFixed(3);
+}
+
+showMultiplicativeAverage([3, 5]);                  // "7.500"
+showMultiplicativeAverage([2, 5, 7, 11, 13, 17]);   // "28361.667"
+
+// 14. Multiply lists
+function multiplyLists(arr1, arr2) {
+  let products = [];
+
+  for (let idx = 0; idx < arr1.length; idx += 1) {
+    let product = arr1[idx] * arr2[idx];
+    products.push(product);
+  }
+
+  return products;
+}
+multiplyLists([3, 5, 7], [9, 10, 11]);  // [27, 50, 77]
+
+
+// 15. Digit list
+function digitList(num) {
+  return String(num).split('').map(x => Number(x));
+}
+
+digitList(12345);       // [1, 2, 3, 4, 5]
+digitList(7);           // [7]
+
+// 16. Log the Occurrences of Array Elements
+function countOccurrences(arr) {
+  let counts = {};
+
+  for (let idx = 0; idx < arr.length; idx += 1) {
+    if (Object.keys(counts).includes(arr[idx])) {
+      counts[arr[idx]] += 1;
+    } else {
+      counts[arr[idx]] = 1;
+    }
+  }
+
+  for (let property in counts) {
+    console.log(property + " => " + counts[property]);
+  }
+}
+const vehicles = ['car', 'car', 'truck', 'car', 'SUV', 'truck',
+                'motorcycle', 'motorcycle', 'car', 'truck'];
+countOccurrences(vehicles);
+// console output
+// car => 4
+// truck => 3
+// SUV => 1
+// motorcycle => 2
+
