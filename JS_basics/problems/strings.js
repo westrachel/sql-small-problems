@@ -906,3 +906,18 @@ function reverseWords(string) {
 }
 reverseWords('Professional');             // "lanoisseforP"
 reverseWords('Walk around the block');    // "Walk dnuora the kcolb"
+
+// 27. Octal to Number
+// > convert the given string argument from an octal to a decimal
+function octalToDecimal(str) {
+  let maxPow = str.length - 1;
+  let decimals = str.split('').map((x, idx) => Number(x) * (8 ** (maxPow - idx)));
+  return decimals.reduce((total, decimal) => total + decimal);
+}
+
+octalToDecimal('1');           // 1
+octalToDecimal('10');          // 8
+octalToDecimal('130');         // 88
+octalToDecimal('17');          // 15
+octalToDecimal('2047');        // 1063
+octalToDecimal('011');         // 9

@@ -371,3 +371,142 @@ sequence(5, 1);          // [1, 2, 3, 4, 5]
 sequence(4, -7);         // [-7, -14, -21, -28]
 sequence(3, 0);          // [0, 0, 0]
 sequence(0, 1000000);    // []
+
+// 17. forEach rebuilt:
+// requirements:
+// > arguments = array & a function
+// > function passed to myForEach should reassign a variable in the outer scope
+function myForEach(array, func) {
+  for (let idx = 0; idx < array.length; idx += 1) {
+    func(array[idx], idx, array);
+  }
+}
+
+
+let min = Infinity;
+let getMin = value => (min = value <= min ? value : min);
+myForEach([4, 5, 12, 23, 3], getMin);
+console.log(min);
+
+// 18. filter rebuilt:
+// requirements:
+// > arguments = array & a function
+// > returns an array w/ values that when passed to the provided function
+//    argument return true
+function myFilter(array, func) {
+  let newArr = [];
+
+  for (let idx = 0; idx < array.length; idx += 1) {
+    if (func(array[idx])) {
+      newArr.push(array[idx]);
+    }
+  }
+
+  return newArr;
+}
+
+let isPythagoreanTriple = function (triple) {
+  return Math.pow(triple.a, 2) + Math.pow(triple.b, 2) === Math.pow(triple.c, 2);
+};
+
+myFilter([{ a: 3, b: 4,  c: 5 },
+          { a: 5, b: 12, c: 13 },
+          { a: 1, b: 2,  c: 3 },], isPythagoreanTriple);
+// returns:
+// [ { a: 3, b: 4, c: 5 },
+//   { a: 5, b: 12, c: 13 } ]
+
+// 19. map rebuilt:
+// requirements:
+// > arguments = array & a function (the callback)
+// > return a new array whose values are the return values of the
+//    callback Function.
+function myMap(array, func) {
+  let newArr = [];
+  array.forEach((element) => newArr.push(func(element)));
+
+  return newArr;
+}
+
+let plusOne = n => n + 1;
+myMap([1, 2, 3, 4], plusOne);       // [ 2, 3, 4, 5 ]
+
+// 20. reduce rebuilt:
+// > arguments: array & a function
+// > allow for a 3rd optional argument that acts as an initial value
+//     <=> if the caller omits the initial value, myReduce should use
+//          the first element of the Array as the initial value
+// > return: value returned by the last invocation of the callback function
+function myReduce(array, func, initial) {
+  let value = array[0];
+  let index = 1;
+
+  if (initial !== undefined) {
+    value = initial;
+    index = 0;
+  }
+
+  array.slice(index).forEach(element => value = func(value, element));
+  return value;
+}
+
+
+let smallest = (result, value) => (result <= value ? result : value);
+let sum = (result, value) => result + value;
+
+myReduce([5, 12, 15, 1, 6], smallest);     // 1
+myReduce([5, 12, 15, 1, 6], sum, 10);      // 49
+
+
+// 21. Total Area:
+// write a function that accepts an Array of subarrays that contain
+// 2 integer elements that represent the height and width of a rectangle
+// the return value should be the total area of all all rectangles
+// approach:
+// i. iterate over each subarray and calculate its area by multiplying
+//     the 2 elements
+// ii. sum all the areas calculated
+// iii. return the sum calculated
+function sumArea(priorArea, area) {
+  return priorArea + area;
+}
+
+function totalArea(array) {
+  return array.map(subarr => subarr[0] * subarr[1]).reduce(sumArea);
+}
+let rectangles = [[3, 4], [6, 6], [1, 8], [9, 9], [2, 2]];
+
+totalArea(rectangles);    // 141
+
+// 22. Total Square Area:
+// write a function that calcs the total area of a set of squares
+// <=> so need to filter to only squares first
+function totalSquareArea(array) {
+  let squares = array.filter(subarray => subarray[0] === subarray[1]);
+  return totalArea(squares);
+}
+
+let squares = [[3, 4], [6, 6], [1, 8], [9, 9], [2, 2]];
+
+totalSquareArea(squares);    // 121
+
+// 23. Anagrams
+// write a function that accepts a word and array as arguments and
+// returns an aray contains only selected words from the array
+// that are anagrams of the word argument
+// approach:
+// i. sort the letters of the given word argument alphabetically
+// ii. iterate through the array containing strings
+// iii. select the word only if its characters sorted value produce
+//   a string that's equivalent to the string found under step i.
+function sortAlphabetically(word) {
+  return word.split('').sort().join('');
+}
+function anagram(word, list) {
+  let sorted = sortAlphabetically(word);
+  return list.filter(string => 
+    sortAlphabetically(string) === sorted);
+}
+
+anagram('listen', ['enlists', 'google', 'inlets', 'banana']);  // [ "inlets" ]
+anagram('listen', ['enlist', 'google', 'inlets', 'banana']);   // [ "enlist", "inlets" ]
