@@ -52,6 +52,8 @@ function oddElementsOf(arr) {
   return oddElements;
 }
 
+oddElementsOf([1, 999, 202]);  
+
 // 4. Sum Subarrays
 // write a function that takes an array of subarrays argument and returns a new
 //   array containing the totals of adding all the elements of each subarray
@@ -103,7 +105,7 @@ function missing(arr) {
   while (value < largest) {
     value += 1;
     if (!arr.includes(value)) {
-      missings.push(value)
+      missings.push(value);
     }
   }
 
@@ -157,7 +159,7 @@ obj.a = 'two';
 newArray[2];          // { a: "two", b: 3 }
 
 // update method to allow for accepting more than 2 arguments
-function concat(...values) {
+function concatMany(...values) {
   let newArr = [];
 
   for (let index = 0; index < values.length; index += 1) {
@@ -171,9 +173,9 @@ function concat(...values) {
   return newArr;
 }
 
-concat([1, 2, 3], [4, 5, 6], [7, 8, 9]);    // [1, 2, 3, 4, 5, 6, 7, 8, 9]
-concat([1, 2], 'a', ['one', 'two']);        // [1, 2, "a", "one", "two"]
-concat([1, 2], ['three'], 4);               // [1, 2, "three", 4]
+concatMany([1, 2, 3], [4, 5, 6], [7, 8, 9]);    // [1, 2, 3, 4, 5, 6, 7, 8, 9]
+concatMany([1, 2], 'a', ['one', 'two']);        // [1, 2, "a", "one", "two"]
+concatMany([1, 2], ['three'], 4);               // [1, 2, "three", 4]
 
 // 8. Running Totals
 // write a function that accepts an array argument and returns a new array
@@ -242,7 +244,6 @@ halvsies([1, 2, 3, 4]);       // [[1, 2], [3, 4]]
 halvsies([1, 5, 2, 4, 3]);    // [[1, 5, 2], [4, 3]]
 halvsies([5]);                // [[5], []]
 halvsies([]);                 // [[], []]
-
 
 // 11. Find the one duplicate in a given array
 function findDup(array) {
@@ -372,7 +373,7 @@ sequence(4, -7);         // [-7, -14, -21, -28]
 sequence(3, 0);          // [0, 0, 0]
 sequence(0, 1000000);    // []
 
-// 17. forEach rebuilt:
+// 18. forEach rebuilt:
 // requirements:
 // > arguments = array & a function
 // > function passed to myForEach should reassign a variable in the outer scope
@@ -388,7 +389,7 @@ let getMin = value => (min = value <= min ? value : min);
 myForEach([4, 5, 12, 23, 3], getMin);
 console.log(min);
 
-// 18. filter rebuilt:
+// 19. filter rebuilt:
 // requirements:
 // > arguments = array & a function
 // > returns an array w/ values that when passed to the provided function
@@ -416,7 +417,7 @@ myFilter([{ a: 3, b: 4,  c: 5 },
 // [ { a: 3, b: 4, c: 5 },
 //   { a: 5, b: 12, c: 13 } ]
 
-// 19. map rebuilt:
+// 20. map rebuilt:
 // requirements:
 // > arguments = array & a function (the callback)
 // > return a new array whose values are the return values of the
@@ -431,7 +432,7 @@ function myMap(array, func) {
 let plusOne = n => n + 1;
 myMap([1, 2, 3, 4], plusOne);       // [ 2, 3, 4, 5 ]
 
-// 20. reduce rebuilt:
+// 21. reduce rebuilt:
 // > arguments: array & a function
 // > allow for a 3rd optional argument that acts as an initial value
 //     <=> if the caller omits the initial value, myReduce should use
@@ -457,8 +458,7 @@ let sum = (result, value) => result + value;
 myReduce([5, 12, 15, 1, 6], smallest);     // 1
 myReduce([5, 12, 15, 1, 6], sum, 10);      // 49
 
-
-// 21. Total Area:
+// 22. Total Area:
 // write a function that accepts an Array of subarrays that contain
 // 2 integer elements that represent the height and width of a rectangle
 // the return value should be the total area of all all rectangles
@@ -478,7 +478,7 @@ let rectangles = [[3, 4], [6, 6], [1, 8], [9, 9], [2, 2]];
 
 totalArea(rectangles);    // 141
 
-// 22. Total Square Area:
+// 23. Total Square Area:
 // write a function that calcs the total area of a set of squares
 // <=> so need to filter to only squares first
 function totalSquareArea(array) {
@@ -490,7 +490,7 @@ let squares = [[3, 4], [6, 6], [1, 8], [9, 9], [2, 2]];
 
 totalSquareArea(squares);    // 121
 
-// 23. Anagrams
+// 24. Anagrams
 // write a function that accepts a word and array as arguments and
 // returns an aray contains only selected words from the array
 // that are anagrams of the word argument

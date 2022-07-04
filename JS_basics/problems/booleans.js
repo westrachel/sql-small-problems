@@ -11,7 +11,7 @@ function isXor(argOne, argTwo) {
     }
   }
 
-  return countTruthyValues === 1 ? true : false
+  return countTruthyValues === 1 ? true : false;
 }
 
 isXor(false, true);     // true

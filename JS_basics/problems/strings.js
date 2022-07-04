@@ -13,7 +13,7 @@ do {
     total += numScore;
     count += 1;
   } else {
-    alert('Please enter your score again with a valid positive integer.')
+    alert('Please enter your score again with a valid positive integer.');
   }
 
 } while (count < 4);
@@ -32,7 +32,7 @@ function findGrade(avgScore) {
   }
 }
 
-let MSG_1 = 'Based on the average of your 3 scores your letter grade is '
+let MSG_1 = 'Based on the average of your 3 scores your letter grade is ';
 console.log(MSG_1 + findGrade(avg));
 
 // 2. Pattern Generation
@@ -55,8 +55,8 @@ function generatePattern(num) {
   let endNum = 1;
 
   while (nStars >= 0) {
-    let nums = Array(endNum).fill(1).map((_, number) => number + 1)
-    let row =  nums.join('') + '*'.repeat(nStars)
+    let nums = Array(endNum).fill(1).map((_, number) => number + 1);
+    let row =  nums.join('') + '*'.repeat(nStars);
 
     console.log(row);
     endNum += 1;
@@ -91,7 +91,7 @@ function leadingTrailingNonSpaceIndices(string) {
 
   for (let index = 0; index < string.length; index += 1) {
     if (!string[index].match(/\s/)) {
-      indices.push(index)
+      indices.push(index);
     }
   }
   if (indices.length > 1) {
@@ -232,7 +232,6 @@ splitString('abc,123,hello world', ',');
 //   > if second argument is negative or is anything besides a positive integer,
 //    return undefined
 //   > can only use string concatenation
-
 function repeat(string, times) {
   if (typeof times === "number" && times > 0) {
     let repeatedStr = '';
@@ -256,7 +255,6 @@ repeat('abc', '  ');    // undefined
 // 6. String Starts With
 // write a function that returns a boolean that specifies whether the first
 // string argument starts with the second string argument or not
-
 function startsWith(string, searchString) {
   let numMatches = 0;
   for (let index = 0; index < searchString.length; index += 1) {
@@ -281,8 +279,8 @@ startsWith(str, 'put');             // false
 let longerString = 'We put comprehension above all else!';
 startsWith(str, longerString);      // false
 
-// reactored solution:
-function startsWith(string, searchString) {
+// refactored solution:
+function beginsWith(string, searchString) {
   for (let idx = 0; idx < searchString.length; idx += 1) {
     if (string[idx] === searchString[idx]) {
       return false;
@@ -301,7 +299,6 @@ function startsWith(string, searchString) {
 //  outside of that range, then push the character of the string being
 //  iterated over as is to the lower case string; otherwise push the
 //  lower case version of the string using the ascii table numeric conversion
-
 function toLowerCase(string) {
   const CONVERSION_REQ_UPPER_BOUND = 90;
   const CONVERSION_REQ_LOWER_BOUND = 65;
@@ -385,7 +382,6 @@ substr('hello world', 0, 0);    // ""
 // > if start or end are less than 0 or isn't a number then treat them as 0
 // > if start or end are greater than the length of the string, treat them as
 //     equal to the string length
-
 function prepIndex(length, index) {
   if (index > length || index === undefined) {
     return length;
@@ -578,7 +574,7 @@ utf16Value('Launch School');      // 1251
 utf16Value('a');                  // 97
 utf16Value('');                   // 0
 
-// 14. De-duplicate consecutives
+// 13. De-duplicate consecutives
 // write a function that removes duplicate instances of
 // the same consecutive character
 function crunch(string) {
@@ -601,7 +597,7 @@ crunch('ggggggggggggggg');            // "g"
 crunch('a');                          // "a"
 crunch('');                           // ""
 
-// 15. Binary
+// 14. Binary
 // write a function that returns a string of 1s and 0s
 // whose length matches the number argument
 function stringy(number) {
@@ -621,7 +617,7 @@ function stringy(number) {
 }
 stringy(6);    // "101010"
 
-// 16. Doubles
+// 15. Doubles
 // write a function that returns 2x the argument input
 // or returns the number as is if it's a double number
 function twice(num) {
@@ -639,7 +635,7 @@ twice(103103);      // 103103
 twice(3333);        // 3333
 twice(7676);        // 7676
 
-// 17. String CleanUp
+// 16. String CleanUp
 // write a function that takes a string and replaces all non-alphabetic
 // characters with space characters
 // requirement: there shouldn't be 2 consecutive space characters
@@ -661,7 +657,7 @@ function cleanUp(string) {
 }
 cleanUp("---what's my +*& line?");  // " what s my line "
 
-// 18. Palindrome Part 1
+// 17. Palindrome Part 1
 // write a function that returns a boolean indicating whether or not the
 // passed in string is a palindrome (case matters)
 function isPalindrome(string) {
@@ -674,7 +670,7 @@ function isPalindrome(string) {
     midIdx = string.length - 2;
   }
 
-  for (let idx = 0; idx <= endIdx; idx += 1) {
+  for (let idx = 0; idx <= midIdx; idx += 1) {
     if (string[idx] != string[endIdx]) {
       return false;
     }
@@ -691,7 +687,7 @@ isPalindrome('356653');     // true
 isPalindrome('maddam');     // true
 isPalindrome('racecar');    // true
 
-// 19. Palindrome Part 2
+// 18. Palindrome Part 2
 // write a function that checks for valid palindromes that ignores
 // the case of characters and that ignores non-alphanumeric characters
 function isRealPalindrome(string) {
@@ -713,7 +709,7 @@ isRealPalindrome('356653');              // true
 isRealPalindrome('356a653');             // true
 isRealPalindrome('123ab321');            // false
 
-// 20. Letter Swap
+// 19. Letter Swap
 // write a function that accepts a string input of words and returns
 // a new string that has swapped the first and last letter of each word
 // valid assumptions:
@@ -755,17 +751,17 @@ function swapFirstLastCharacters(word) {
   return word[word.length - 1] + word.slice(1, -1) + word[0];
 }
 
-function swap(string) {
+function swap2(string) {
   let words = string.split(' ');
   let swappedWords = words.map(word => swapFirstLastCharacters(word));
 
   return swappedWords.join(' ');
 }
-swap('Oh what a wonderful day it is');  // "hO thaw a londerfuw yad ti si"
-swap('Abcde');                          // "ebcdA"
-swap('a');                              // "a"
+swap2('Oh what a wonderful day it is');  // "hO thaw a londerfuw yad ti si"
+swap2('Abcde');                          // "ebcdA"
+swap2('a');                              // "a"
 
-// 21. Letter Counter Part 1
+// 20. Letter Counter Part 1
 // write a function that accepts a string and returns an object that contains
 // counts of the # of words that have specific letter counts
 // > a word consist of any sequence of non-space characters
@@ -794,7 +790,7 @@ wordSizes('Hey diddle diddle, the cat and the fiddle!');  // { "3": 5, "6": 1, "
 wordSizes("What's up doc?");                              // { "2": 1, "4": 1, "6": 1 }
 wordSizes('');                                            // {}
 
-// 22. Letter Counter Part 2
+// 21. Letter Counter Part 2
 // modify the prior function to exclude non-letters when calculating word size
 function scrubWord(word) {
   let scrubbed = '';
@@ -836,7 +832,7 @@ strictWordSizes('Hey diddle diddle, the cat and the fiddle!');  // { "3": 5, "6"
 strictWordSizes("What's up doc?");    // { "5": 1, "2": 1, "3": 1 }
 strictWordSizes('');   // {}
 
-// 23. Double Every Character in a Given String
+// 22. Double Every Character in a Given String
 function repeater(string) {
   let doubled = '';
 
@@ -870,7 +866,7 @@ doubleConsonants('Hello-World!');    // "HHellllo-WWorrlldd!"
 doubleConsonants('July 4th');        // "JJullyy 4tthh"
 doubleConsonants('');                // ""
 
-// 25. Return the middle character(s) of a given string
+// 23. Return the middle character(s) of a given string
 function centerOf(string) {
   if (string.length % 2 == 0) {
     let idx2 = string.length / 2;
@@ -886,7 +882,7 @@ centerOf('Hello World');     // " "
 centerOf('Launch');            // "un"
 centerOf('x');                 // "x"
 
-// 26. Reverse the Words
+// 24. Reverse the Words
 // > reverse words that are 5 characters or longer
 // > words are separated by single spaces
 function reverseWords(string) {
@@ -907,7 +903,7 @@ function reverseWords(string) {
 reverseWords('Professional');             // "lanoisseforP"
 reverseWords('Walk around the block');    // "Walk dnuora the kcolb"
 
-// 27. Octal to Number
+// 25. Octal to Number
 // > convert the given string argument from an octal to a decimal
 function octalToDecimal(str) {
   let maxPow = str.length - 1;
@@ -921,3 +917,203 @@ octalToDecimal('130');         // 88
 octalToDecimal('17');          // 15
 octalToDecimal('2047');        // 1063
 octalToDecimal('011');         // 9
+
+// 26. write a function that returns a reversed string
+// > can't use reverse()
+function reverse(string) {
+  let chars = string.split('');
+  let reversed = [];
+  chars.forEach(char => reversed.unshift(char));
+  return reversed.join('');
+}
+
+reverse('hello');                  // "olleh"
+reverse('The quick brown fox');    // "xof nworb kciuq ehT"
+
+// 27. write a function that accepts a string of words that
+//  are delimited by space characters or dashes and returns an
+// acronym
+// approach:
+// i. replace all dash characters with single space characters
+// ii. split the string at space characters
+// iii. iterate over the array of words returned from (i) and map
+// aka transform each word into its first letter capitalized
+// iv. return a string that has concatenated the capitalized first
+//  letter of each word
+function acronym(string) {
+  let words = string.replace(/\-/g, ' ').split(' ');
+  return words.map(word => 
+    word[0].toUpperCase()).join('');
+}
+
+acronym('Portable Network Graphics');                 // "PNG"
+acronym('First In, First Out');                       // "FIFO"
+acronym('PHP: HyperText Preprocessor');               // "PHP"
+acronym('Complementary metal-oxide semiconductor');   // "CMOS"
+acronym('Hyper-text Markup Language');               // "HTML"
+
+// 28. Balanced Parentheses
+// write a function that returns a boolean indicating whether
+// the passed in string argument has matching parentheses or not
+// approach:
+// i. iterate through the characters of the given string
+// ii. keep count of the # of open and closed parentheses encountered
+// iii. if the number of closed parentheses encountered ever exceeds
+//  the number of open parentheses encountered then break the loop and
+//  return false
+// iv. after iteration, compare if the number of open and closed parenthesis
+//   counts are the same or not
+function isBalanced(string) {
+  let counts = { openPar: 0, closedPar: 0, };
+  let chars = string.split('');
+
+  for (let idx = 0; idx < chars.length; idx += 1) {
+    if (chars[idx] === '(') {
+      counts.openPar += 1;
+    } else if (chars[idx] === ')') {
+      counts.closedPar += 1;
+    }
+    
+    if (counts.closedPar > counts.openPar) {
+      return false;
+    }
+  }
+
+  return counts.openPar === counts.closedPar;
+}
+
+isBalanced('What (is) this?');        // true
+isBalanced('What is) this?');         // false
+isBalanced('What (is this?');         // false
+isBalanced('((What) (is this))?');    // true
+isBalanced('((What)) (is this))?');   // false
+isBalanced('Hey!');                   // true
+isBalanced(')Hey!(');                 // false
+isBalanced('What ((is))) up(');       // false
+
+// 29. Longest Sentence
+// write a function that finds the sentence w/ the most words
+// and logs it alongside the # of words it contains
+// requirements:
+// > sentences can end w/ `.`, `!`, `?`
+// > sentences always begin w/ a word character
+// > any character that is not a space or sentence-ending character
+//    is part of a word
+// approach:
+// i. declare a variable that points to an empty array that will store
+//    individual objects with a sentence property and a word count property
+//    and declare a sentence variable that points to an empty string
+// ii. iterate over the given text string's characters
+// iii. add the character onto the existing string that sentence points to
+//    > only add the character if it's not a leading space character 
+//    > can check for leading space characters by checking if the prior 
+//        character iterated over was a sentence ending character and
+//        the current character being iterated over is a space
+// iv. if the character added to the string is '!', '.', and '?' then
+//    find the sentence string's word count and push the string sentence points
+//    to and its  word count as an object to the array declared earlier
+// v. reassign the sentence variable to an empty string before beginning
+//   the next iteration
+// vi. sort the array of objects based on each subobject's word count property
+//      > sort largest to smallest
+// vii. log to the console the string sentence property and the word count property
+//    of the first object in the sorted array
+function longestSentence(txt) {
+  let sentencesWordCounts = findSentencesWordCounts(txt);
+
+  sentencesWordCounts.sort((sentence1, sentence2) => 
+    sentence1.numWords < sentence2.numWords);
+
+  let longest = sentencesWordCounts[0];
+  console.log(longest.sentence);
+  console.log('The longest sentence has ' + longest.numWords + ' words.');
+}
+
+function findSentencesWordCounts(text) {
+  let sentencesWordCounts = [];
+  let singleSentence = '';
+  let chars = text.split('');
+
+  for (let idx = 0; idx < chars.length; idx += 1) {
+    let prior = idx === 0 ? '' : chars[idx - 1];
+    let current = chars[idx];
+    let char = (startingSpace(prior, current) ? '' : current);
+    singleSentence += char;
+
+    if (char.match(/[\.!?]/)) {
+      sentencesWordCounts.push({
+        sentence: singleSentence,
+        numWords: wordCount(singleSentence),
+      });
+      
+      singleSentence = '';
+    }
+  }
+
+  return sentencesWordCounts;
+}
+
+function startingSpace(priorChar, currentChar) {
+  return priorChar.match(/[\.!?]/) && currentChar === ' ';
+}
+
+function wordCount(string) {
+  return string.split(' ').length;
+}
+
+let longText = 'Four score and seven years ago our fathers brought forth' +
+  ' on this continent a new nation, conceived in liberty, and' +
+  ' dedicated to the proposition that all men are created' +
+  ' equal.' +
+  ' Now we are engaged in a great civil war, testing whether' +
+  ' that nation, or any nation so conceived and so dedicated,' +
+  ' can long endure. We are met on a great battlefield of that' +
+  ' war. We have come to dedicate a portion of that field, as' +
+  ' a final resting place for those who here gave their lives' +
+  ' that that nation might live. It is altogether fitting and' +
+  ' proper that we should do this.' +
+  ' But, in a larger sense, we can not dedicate, we can not' +
+  ' consecrate, we can not hallow this ground. The brave' +
+  ' men, living and dead, who struggled here, have' +
+  ' consecrated it, far above our poor power to add or' +
+  ' detract. The world will little note, nor long remember' +
+  ' what we say here, but it can never forget what they' +
+  ' did here. It is for us the living, rather, to be dedicated' +
+  ' here to the unfinished work which they who fought' +
+  ' here have thus far so nobly advanced. It is rather for' +
+  ' us to be here dedicated to the great task remaining' +
+  ' before us -- that from these honored dead we take' +
+  ' increased devotion to that cause for which they gave' +
+  ' the last full measure of devotion -- that we here highly' +
+  ' resolve that these dead shall not have died in vain' +
+  ' -- that this nation, under God, shall have a new birth' +
+  ' of freedom -- and that government of the people, by' +
+  ' the people, for the people, shall not perish from the' +
+  ' earth.';
+
+longestSentence(longText);
+// logs 86 words + corresponding sentence
+
+let semiLongText = 'Four score and seven years ago our fathers brought forth' +
+  ' on this continent a new nation, conceived in liberty, and' +
+  ' dedicated to the proposition that all men are created' +
+  ' equal.' +
+  ' Now we are engaged in a great civil war, testing whether' +
+  ' that nation, or any nation so conceived and so dedicated,' +
+  ' can long endure. We are met on a great battlefield of that' +
+  ' war. We have come to dedicate a portion of that field, as' +
+  ' a final resting place for those who here gave their lives' +
+  ' that that nation might live. It is altogether fitting and' +
+  ' proper that we should do this.' +
+  ' But, in a larger sense, we can not dedicate, we can not' +
+  ' consecrate, we can not hallow this ground. The brave' +
+  ' men, living and dead, who struggled here, have' +
+  ' consecrated it, far above our poor power to add or' +
+  ' detract. The world will little note, nor long remember' +
+  ' what we say here, but it can never forget what they' +
+  ' did here. It is for us the living, rather, to be dedicated' +
+  ' here to the unfinished work which they who fought' +
+  ' here have thus far so nobly advanced.';
+
+longestSentence(semiLongText);
+// logs 30 words + corresponding sentence

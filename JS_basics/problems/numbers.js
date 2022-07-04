@@ -11,8 +11,7 @@ logOddNumbers(19);
 
 // refactor to check for even numbers and skip all even evaluated numbers
 //   using the continue statement
-
-function logOddNumbers(endpoint) {
+function logOddNums(endpoint) {
   for (let oddNumber = 1; oddNumber <= endpoint; oddNumber += 1) {
    if (oddNumber % 2 === 0) {
      continue;
@@ -66,7 +65,7 @@ logMultiples(17);
 // 17
 
 // refactored findLargestMultiplerLtEq100 function that doesn't require a loop
-function findLargestMultiplerLtEq100(factor) {
+function findLgestMultiplerLtEq100(factor) {
   return Math.floor(100 / factor) * factor;
 }
 
@@ -76,13 +75,13 @@ function findLargestMultiplerLtEq100(factor) {
 // 5 or FizzBuzz for multiples of 3 and 5
 function valueToLog(number) {
   if (number % 3 === 0 && number % 5 === 0) {
-    return "FizzBuzz"
+    return "FizzBuzz";
   } else if (number % 3 === 0) {
-    return "Fizz"
+    return "Fizz";
   } else if (number % 5 === 0) {
-    return "Buzz"
+    return "Buzz";
   } else {
-    return number
+    return number;
   }
 }
 
@@ -104,7 +103,7 @@ fizzbuzz();
 // assumption: non-negative input
 function isPrime(num) {
   if ([0, 1].includes(num) || (num > 2 && num % 2 === 0)) {
-    return false
+    return false;
   }
 
   let factors = [1, num];
@@ -112,12 +111,12 @@ function isPrime(num) {
 
   while (factors.length == 2 && factor < num) {
     if (num % factor === 0) {
-      factors.push(factor)
+      factors.push(factor);
     }
     factor += 1;
   }
 
-  return factors.length > 2 ? false : true
+  return factors.length > 2 ? false : true;
 }
 
 isPrime(1);   // false
@@ -136,7 +135,7 @@ function findFactors(number) {
 
   while (potentialFactor < number) {
     if (number % potentialFactor === 0){
-      factors.push(potentialFactor)
+      factors.push(potentialFactor);
     }
     potentialFactor += 1;
   }
@@ -158,7 +157,7 @@ gcd(9, 2);    // 1
 
 // update the function to accept an array of 2 or more numbers
 // assumption: arr will contain at least 2 elements
-function gcd(arr) {
+function gcdMany(arr) {
   let factorsOne = findFactors(arr[0]);
   let factorsTwo = findFactors(arr[1]);
   let index = 2;
@@ -173,9 +172,9 @@ function gcd(arr) {
   return Math.max(...likeFactors);
 }
 
-gcd([12, 4, 8]);   // 4
-gcd([16, 24, 32]); // 8
-gcd([12, 6]);      // 6
+gcdMany([12, 4, 8]);   // 4
+gcdMany([16, 24, 32]); // 8
+gcdMany([12, 6]);      // 6
 
 // 6. GoldBach Numbers
 // write a function that logs every pair of prime numbers that sum to the
@@ -252,7 +251,7 @@ function stringToInteger(string) {
   const STRING_TO_NUM = {
     '0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5,
     '6': 6, '7': 7, '8': 8, '9': 9
-  }
+  };
   
   let total = 0;
   let exponent = string.length - 1;
@@ -298,7 +297,7 @@ function integerToString(integer) {
   const NUM_TO_STRING = {
     0: '0', 1: '1', 2: '2', 3: '3', 4: '4', 5: '5',
     6: '6', 7: '7', 8: '8', 9: '9'
-  }
+  };
 
   let numberString = '';
 
@@ -404,7 +403,8 @@ function century(year) {
     '1': 'st', '2': 'nd', '3': 'rd', '4': 'th',
     '5': 'th', '6': 'th', '7': 'th', '8': 'th',
     '9': 'th', '0': 'th',
-  }
+  };
+
   let century = String(Math.ceil(year / 100));
   let lastTwoDigits = century.split('').slice(century.length - 2, century.length).join('');
 
