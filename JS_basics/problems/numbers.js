@@ -520,3 +520,13 @@ dms(254.6);        // 254°35'59"
 dms(93.034773);    // 93°02'05"
 dms(0);            // 0°00'00"
 dms(360);          // 360°00'00" or 0°00'00"
+
+// 18. write a function that takes a positive integer and returns the
+//  sum of its digits via a chain of method calls
+function sum(num) {
+  let nums = String(num).split('');
+  return nums.reduce((total, strNum) => total + Number(strNum));
+}
+sum(23);           // 5
+sum(496);          // 19
+sum(123456789);    // 45

@@ -1006,9 +1006,9 @@ isBalanced('What ((is))) up(');       // false
 // ii. iterate over the given text string's characters
 // iii. add the character onto the existing string that sentence points to
 //    > only add the character if it's not a leading space character 
-//    > can check for leading space characters by checking if the prior 
-//        character iterated over was a sentence ending character and
-//        the current character being iterated over is a space
+//    > can check for leading invalid characters by checking if current sentence
+//       variable has been reassigned to an empty string and if the current
+//       character being iterated over isn't a letter
 // iv. if the character added to the string is '!', '.', and '?' then
 //    find the sentence string's word count and push the string sentence points
 //    to and its  word count as an object to the array declared earlier
@@ -1016,17 +1016,34 @@ isBalanced('What ((is))) up(');       // false
 //   the next iteration
 // vi. sort the array of objects based on each subobject's word count property
 //      > sort largest to smallest
+//      > pass to the sort method a comparison function that will:
+//          > return -1 if the first object's word count property is larger than
+//             the number word count property of the second object (b/c want to
+//             sort largest to smallest)
+//          > return 1 if the first object's word count property is smaller than the
+//             word count property of the second object
+//          > return 0 if neither of the prior 2 comparisons evaluated as true (in this
+//               case the objects have the same numerical value associated with their
+//                numWords property)
 // vii. log to the console the string sentence property and the word count property
 //    of the first object in the sorted array
 function longestSentence(txt) {
   let sentencesWordCounts = findSentencesWordCounts(txt);
-
-  sentencesWordCounts.sort((sentence1, sentence2) => 
-    sentence1.numWords < sentence2.numWords);
+  sentencesWordCounts.sort(compareWordCounts);
 
   let longest = sentencesWordCounts[0];
   console.log(longest.sentence);
   console.log('The longest sentence has ' + longest.numWords + ' words.');
+}
+
+function compareWordCounts(obj1, obj2) {
+  if (obj1.numWords > obj2.numWords) {
+    return -1;
+  } else if (obj1.numWords < obj2.numWords) {
+    return 1;
+  }
+
+  return 0;
 }
 
 function findSentencesWordCounts(text) {
@@ -1035,9 +1052,8 @@ function findSentencesWordCounts(text) {
   let chars = text.split('');
 
   for (let idx = 0; idx < chars.length; idx += 1) {
-    let prior = idx === 0 ? '' : chars[idx - 1];
-    let current = chars[idx];
-    let char = (startingSpace(prior, current) ? '' : current);
+    let char = chars[idx];
+    char = invalidStartingChar(singleSentence, char) ? '' : char;
     singleSentence += char;
 
     if (char.match(/[\.!?]/)) {
@@ -1053,13 +1069,16 @@ function findSentencesWordCounts(text) {
   return sentencesWordCounts;
 }
 
-function startingSpace(priorChar, currentChar) {
-  return priorChar.match(/[\.!?]/) && currentChar === ' ';
+function invalidStartingChar(currSentence, currentChar) {
+  return currSentence === '' && !currentChar.match(/[A-Z]/i);
 }
 
 function wordCount(string) {
   return string.split(' ').length;
 }
+
+let shortText = "What's up, 'Doc'?    The brown fox is superlative!";
+longestSentence(shortText);
 
 let longText = 'Four score and seven years ago our fathers brought forth' +
   ' on this continent a new nation, conceived in liberty, and' +
@@ -1117,3 +1136,37 @@ let semiLongText = 'Four score and seven years ago our fathers brought forth' +
 
 longestSentence(semiLongText);
 // logs 30 words + corresponding sentence
+
+// 30. write a function that returns a boolean that indicates whether
+// all the alphabetical letters in the given string are uppercased or
+// not
+function isUppercase(string) {
+  let letters = string.split('').filter(char => 
+    char.match(/[A-Z]/i));
+
+  let upperCased = letters.filter(char =>
+    char.match(/[A-Z]/));
+
+  return upperCased.length === letters.length;
+}
+
+isUppercase('t');               // false
+isUppercase('T');               // true
+isUppercase('Four Score');      // false
+isUppercase('FOUR SCORE');      // true
+isUppercase('4SCORE!');         // true
+isUppercase('');                // true
+
+// 31. write a function that takes an array argument of strings and
+// returns an array of the same strings scrubbed of vowels
+//  vowels: a, e, i, o, u
+
+function removeVowels(array) {
+  return array.map(str =>
+    str.split('').filter(char =>
+      !char.match(/[AEIOU]/i)).join(''));
+}
+
+removeVowels(['abcdefghijklmnopqrstuvwxyz'])          // ["bcdfghjklmnpqrstvwxyz"];     
+removeVowels(['green', 'YELLOW', 'black', 'white']);  // ["grn", "YLLW", "blck", "wht"]
+removeVowels(['ABC', 'AEIOU', 'XYZ']);                // ["BC", "", "XYZ"]
