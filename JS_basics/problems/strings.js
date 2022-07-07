@@ -1170,3 +1170,77 @@ function removeVowels(array) {
 removeVowels(['abcdefghijklmnopqrstuvwxyz'])          // ["bcdfghjklmnpqrstvwxyz"];     
 removeVowels(['green', 'YELLOW', 'black', 'white']);  // ["grn", "YLLW", "blck", "wht"]
 removeVowels(['ABC', 'AEIOU', 'XYZ']);                // ["BC", "", "XYZ"]
+
+
+// 32. write a function that takes 1 string argument & returns an object that contains
+// 3 properties: 
+//   i. the number of lowercase letters in the string,
+//   ii. the number of uppercase letters in the string,
+// iii. the number of characters that aren't alphabetical letters
+function letterCaseCount(string){
+  let counts = { lowercase: 0,
+                 uppercase: 0,
+                 neither: 0, };
+
+  string.split('').forEach(char =>
+    updateLetterCaseCounts(char, counts));
+
+  return counts;
+}
+
+function updateLetterCaseCounts(character, obj) {
+  if (character.match(/[a-z]/)) {
+    obj.lowercase += 1;
+  } else if (character.match(/[A-Z]/)) {
+    obj.uppercase += 1;
+  } else {
+    obj.neither += 1;
+  }
+
+}
+letterCaseCount('abCdef 123');  // { lowercase: 5, uppercase: 1, neither: 4 }
+letterCaseCount('AbCd +Ef');    // { lowercase: 3, uppercase: 3, neither: 2 }
+letterCaseCount('123');         // { lowercase: 0, uppercase: 0, neither: 3 }
+letterCaseCount('');            // { lowercase: 0, uppercase: 0, neither: 0 }
+
+// 33. case scrubbing
+// ensure the provided string's words each start with a capital letter and
+//   all the subsequent characters are lowercased
+//  word = any sequence of non-whitespace characters
+
+// approach:
+// i. iterate over the characters of the provided string
+// ii. if the prior character is a whitespace character or it's the first character
+// in the string then capitalize the character
+// iii. if the conditions of ii aren't met then lowercase the letter
+// iv. join the mapped characters back together and return the joined string
+function wordCap(string) {
+  let chars = string.split('');
+  let preppedChars = [];
+
+  for (let idx = 0; idx < chars.length; idx += 1) {
+    let char = chars[idx];
+    
+    if (idx === 0 || chars[idx - 1].match(/[\s]/)) {
+      preppedChars.push(char.toUpperCase());
+    } else {
+      preppedChars.push(char.toLowerCase());
+    }
+  }
+
+  return preppedChars.join('');
+}
+
+wordCap('four score and seven');       // "Four Score And Seven"
+wordCap('the javaScript language');    // "The Javascript Language"
+wordCap('this is a "quoted" word');    // 'This Is A "quoted" Word'
+
+// 34. case swapping
+// switch the case of each letter in the given string argument
+function swapCase(string) {
+  return string.split('').map(char => 
+    char.match(/[A-Z]/) ? char.toLowerCase() : 
+    char.toUpperCase()).join('');
+}
+swapCase('CamelCase');              // "cAMELcASE"
+swapCase('Tonight on XYZ-TV');      // "tONIGHT ON xyz-tv"

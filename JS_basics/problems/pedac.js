@@ -219,3 +219,84 @@ alphabeticNumberSort(
 alphabeticNumberSort([1, 2, 3]);
 // [1, 3, 2]
 // one, three, two
+
+
+// Problem:
+// find all multiplicative pairs
+// reqs:
+// > the array returned should be sorted from smallest number
+//    to largest
+// > neither argument will be an empty array
+// > the arrays will only contain numbers
+
+// Data:
+// input: 2 array arguments that contain numbers
+// output: new array that contains the product of all possible number combinations
+//    of the provided array arguments
+//   <=> the should be sorted in ascending numerical order
+
+// Algorithm:
+// i. iterate over one of the arrays
+// ii. with each iteration:
+//      > iterate over all the elements of the other array argument
+//      > multiply each numerical element being iterated over
+//      > push the product to a new array
+// iii. sort the new array created from largest to smallest
+// iv. return the sorted array
+function multiplyAllPairs(arr1, arr2) {
+  let products = [];
+
+  arr1.forEach(num1 => {
+    arr2.forEach(num2 => {
+      products.push(num1 * num2);
+    });
+  });
+
+  return products.sort((num1, num2) => num1 - num2);
+}
+
+// Test Cases:
+multiplyAllPairs([2, 4], [4, 3, 1, 2]);    // [2, 4, 4, 6, 8, 8, 12, 16]
+multiplyAllPairs([2, 2], [1, 1]);          // [2, 2, 2, 2]
+
+
+// Problem:
+// find the sum of sums of all subsequences 
+// requirements:
+// > subsequence:
+// ex. [3, 5, 2] has the following subsequences:
+//   (3) + (3 + 5) + (3 + 5 + 2)
+
+// Data:
+// input: argument will be a single array of numbers only <=> at least 1 number
+// output: a number that represents the sum of sequences 
+
+// Algorithm:
+// i. declare a length variable that initially points to 1
+// ii. declare a final length variable that points to the number associated with
+//    the length property of the array argument
+// iii. establish a for loop that will continue iterating until the number that the
+//    length variable points to is equivalent to the final length variable
+// iv. on each iteration:
+//       > add 1 to the number that the length variable points to
+//       > slice the array argument from the 0th index and pass in the
+//           length variable's current value as the 2nd argument
+// v. sum the number elements of the sliced array and add it to a running total value
+//     that represents the sum of sums of each sequence
+// vi. return the running total sum
+
+function sumOfSums(array) {
+  let finalLength = array.length;
+  let sum = 0;
+
+  for (let length = 1; length <= finalLength; length += 1) {
+    sum += array.slice(0, length).reduce(
+      (total, value) => total + value);
+  }
+
+  return sum;
+}
+sumOfSums([3, 5, 2]);        // (3) + (3 + 5) + (3 + 5 + 2) --> 21
+sumOfSums([1, 5, 7, 3]);     // (1) + (1 + 5) + (1 + 5 + 7) + (1 + 5 + 7 + 3) --> 36
+sumOfSums([4]);              // 4
+sumOfSums([1, 2, 3, 4, 5]);  // 35
