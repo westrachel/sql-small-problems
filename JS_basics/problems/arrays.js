@@ -510,3 +510,174 @@ function anagram(word, list) {
 
 anagram('listen', ['enlists', 'google', 'inlets', 'banana']);  // [ "inlets" ]
 anagram('listen', ['enlist', 'google', 'inlets', 'banana']);   // [ "enlist", "inlets" ]
+
+// 25. write a function that takes 1 string argument and returns a list of
+// substrings of the given string
+// > each substring should begin w/ the 1st letter of the word
+// > the return value should be an array object that contains the substrings
+//      ordered from shortest to longest
+function leadingSubstrings(str) {
+  let maxNum = str.length + 1;
+  let lengthsOfSubstrs = [...Array(maxNum).keys()].slice(1);
+
+  return lengthsOfSubstrs.map(length => 
+    str.slice(0, length));
+}
+
+leadingSubstrings('abc');      // ["a", "ab", "abc"]
+leadingSubstrings('a');        // ["a"]
+leadingSubstrings('xyzzy');    // ["x", "xy", "xyz", "xyzz", "xyzzy"]
+
+// 26. find all substrings of a given string and return them in an array
+// requirements:
+// > order the returned array by where in the string the substring begins
+// > all substrings that start at index position 0 should come first
+// > return the substrings at a given index from shortest to longest
+function substrings(string){
+  let substrings = [];
+
+  for (let idx = 0; idx < string.length; idx += 1) {
+    let subStr = string.slice(idx, string.length);
+    
+    leadingSubstrings(subStr).forEach(str => 
+      substrings.push(str));
+  }
+  return substrings; 
+}
+
+substrings('abcde');
+// [ "a", "ab", "abc", "abcd", "abcde",
+//   "b", "bc", "bcd", "bcde",
+//   "c", "cd", "cde",
+//   "d", "de",
+//   "e" ]
+
+// 27. Palindromic Substrings
+// write a function that returns an array of all substrings of a
+//  given string that are palindromic
+// requirements:
+// > each substring must consist of the same sequence of characters
+//    forwards as backwards
+// > The substrings in the returned list should be sorted by their order
+//    of appearance in the input string
+// > Duplicate substrings should be included multiple times
+// > palindromes are case sensitive
+//    >> 'AbcbA' is a palindrome
+//    >> 'Abcba' and 'Abc-bA' are not palindroms
+// > single characters are not palindromes
+
+// approach:
+// i. find all substrings of the given string
+// ii. iterate through the substrings found and filter to only substrings
+//  that are palindromes
+//    > to check if a substring is a palindrome:
+//       > split the string into characters
+//       > reverse the characters
+//       > join the characters back together
+//       > check if the reversed substring is equivalent to the substring itself
+//       > also check that the substring has a length greater than 1
+function palindromes(string) {
+  return substrings(string).filter(isPalindrome);
+}
+
+function isPalindrome(str) {
+  return str === str.split('').reverse().join('') && str.length > 1;
+}
+
+palindromes('abcd');       // []
+palindromes('madam');      // [ "madam", "ada" ]
+
+palindromes('hello-madam-did-madam-goodbye');
+// [ "ll", "-madam-", "-madam-did-madam-", "madam", "madam-did-madam", "ada",
+//   "adam-did-mada", "dam-did-mad", "am-did-ma", "m-did-m", "-did-", "did",
+//   "-madam-", "madam", "ada", "oo" ]
+
+palindromes('knitting cassettes');
+//[ "nittin", "itti", "tt", "ss", "settes", "ette", "tt" ]
+
+// 28. stagger the case of all alphabetical letters of a given string
+// > the first letter should be capitalized
+// > Non-alphabetic characters should not be changed, but do count as characters
+//      for determining when to switch between upper and lower case
+function staggeredCase(str) {
+  let staggeredCaseStr = '';
+  let capitalizeFlag = true;
+
+  for (let idx = 0; idx < str.length; idx += 1) {
+    let char = capitalizeFlag ? str[idx].toUpperCase() : str[idx].toLowerCase();
+    staggeredCaseStr += char;
+    capitalizeFlag = capitalizeFlag ? false : true;
+  }
+
+  return staggeredCaseStr;
+}
+
+staggeredCase('ALL_CAPS');                     // "AlL_CaPs"
+staggeredCase('ignore 77 the 4444 numbers');   // "IgNoRe 77 ThE 4444 nUmBeRs"
+
+// 29. stagger the case of all alphabetical letters of a given string
+// > ignore non-alphabetic characters when determining whether a letter
+//     should be upper or lower cased
+function staggeredCaseLetters(str) {
+  let staggeredCaseStr = '';
+  let capitalizeFlag = true;
+
+  for (let idx = 0; idx < str.length; idx += 1) {
+    let char = str[idx];
+
+    if (char.match(/[a-z]/i)) {
+      char = capitalizeFlag ? char.toUpperCase() : char.toLowerCase();
+      capitalizeFlag = capitalizeFlag ? false : true;
+    }
+    staggeredCaseStr += char;
+  }
+
+  return staggeredCaseStr;
+}
+
+staggeredCaseLetters('ALL CAPS');                     // "AlL cApS"
+staggeredCaseLetters('ignore 77 the 444 numbers');    // "IgNoRe 77 ThE 444 nUmBeRs"
+
+// 30. write a function that takes a string as an argument and returns an array
+// that contains every word from the string, with each word followed by a space
+//  and the word's length
+// > if the argument is an empty string or if no argument is passed, the return
+//   should be an empty array
+// > every pair of words in the string will be separated by a single space
+function wordLengths(string) {
+  if (!string) {
+    return [];
+  }
+
+  return string.split(' ').map(word => 
+    word + " " + String(word.length));
+}
+
+wordLengths('cow sheep chicken');
+// ["cow 3", "sheep 5", "chicken 7"]
+
+wordLengths('baseball hot dogs and apple pie');
+// ["baseball 8", "hot 3", "dogs 4", "and 3", "apple 5", "pie 3"]
+
+wordLengths("It ain't easy, is it?");
+// ["It 2", "ain't 5", "easy, 5", "is 2", "it? 3"]
+
+wordLengths('Supercalifragilisticexpialidocious');
+// ["Supercalifragilisticexpialidocious 34"]
+
+wordLengths('');      // []
+wordLengths();        // []
+
+// 31. write a function that returns the # of times a word
+// appears in a string of text
+// > the word is case insensitive
+const text = 'Sed ut perspiciatis unde omnis sed iste natus error sit voluptatem sed';
+
+function searchWord(word, string) {
+  let pattern = new RegExp(word, "gi");
+  let numMatches = string.match(pattern).length;
+
+  return numMatches ? numMatches : 0;
+}
+searchWord('hi', text);        // 0
+searchWord('sed', text);      // 3
