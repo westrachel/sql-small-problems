@@ -184,3 +184,40 @@ console.log(processBands(bands)[2]);
 // { name: 'Women', country: 'Canada', active: false },
 // { name: 'A Silver Mt Zion', country: 'Canada', active: true },
 // ]
+
+// 6. filter a given list to a specified id
+const transactions = [ { id: 101, movement: 'in',  quantity:  5 },
+                       { id: 105, movement: 'in',  quantity: 10 },
+                       { id: 102, movement: 'out', quantity: 17 },
+                       { id: 101, movement: 'in',  quantity: 12 },
+                       { id: 103, movement: 'out', quantity: 15 },
+                       { id: 102, movement: 'out', quantity: 15 },
+                       { id: 105, movement: 'in',  quantity: 25 },
+                       { id: 101, movement: 'out', quantity: 18 },
+                       { id: 102, movement: 'in',  quantity: 22 },
+                       { id: 103, movement: 'out', quantity: 15 }, ];
+
+function transactionsFor(idNum, list) {
+  return list.filter(obj => obj.id === idNum);
+}
+transactionsFor(101, transactions);
+// [ { id: 101, movement: "in",  quantity:  5 },
+//   { id: 101, movement: "in",  quantity: 12 },
+//   { id: 101, movement: "out", quantity: 18 }, ]
+
+// 7. write a function that returns a boolean indicating if an
+// item in a list is available or not
+// > availability:
+//    >> return true only if the sum of the quantity values of the item's
+//         transactions is greater than zero. 
+//    >> 'out' movements decrease the item's quantity
+function isItemAvailable(idNum, list) {
+  let total = 0;
+  transactionsFor(idNum, list).forEach(item => {
+    total += item.movement === 'in' ? item.quantity : -1 * item.quantity;
+  });
+
+  return total > 0;
+}
+isItemAvailable(101, transactions);     // false
+isItemAvailable(105, transactions);     // true

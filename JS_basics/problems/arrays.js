@@ -668,8 +668,8 @@ wordLengths('Supercalifragilisticexpialidocious');
 wordLengths('');      // []
 wordLengths();        // []
 
-// 31. write a function that returns the # of times a word
-// appears in a string of text
+// 31. write a function that returns the # of times a word appears
+// in a string of text
 // > the word is case insensitive
 const text = 'Sed ut perspiciatis unde omnis sed iste natus error sit voluptatem sed';
 
@@ -681,3 +681,53 @@ function searchWord(word, string) {
 }
 searchWord('hi', text);        // 0
 searchWord('sed', text);      // 3
+
+// update prior function to return the # of times a full word appears
+// in a string of text
+const moreText = 'Sedated ut perspiciatis sed iste natus error sit voluptatem sed';
+function searchFullWord(word, string) {
+  let matches = string.split(' ').filter(subWord =>
+    subWord.toUpperCase() === word.toUpperCase());
+
+  return matches.length;
+}
+
+searchFullWord('sed', moreText);   // 2
+searchFullWord('hi', text);        // 0
+searchFullWord('sed', text);      // 3
+
+// 32. write a function that takes a word and a string of text as arguments &
+// returns the string modified to highlight the word highlighted
+// > highlighting consists of:
+//     >> putting 2 asterisks ('**') on each side of the word
+//     >> capitalizing every letter of the word to uppercase
+// > can assume words are separated by single spaces
+function highlightWord(word, string) {
+  return string.split(' ').map(subWord => {
+    if (subWord.toUpperCase() === word.toUpperCase()) {
+      return '**' + subWord.toUpperCase() + '**';
+    } else {
+      return subWord;
+    }
+  }).join(' ');
+}
+
+highlightWord('sed', text);
+// '**SED** ut perspiciatis unde omnis **SED** iste natus error sit voluptatem **SED**';
+
+// 33. write a function that creates a grocery list by taking
+// a 2 argument array and returning the string word of each subarray
+// repeated the number of times specified by the numerical value in the subarray
+// > assume no missing arguments and that the subarrays only contain 2 elements
+//     the first being a string to repeat and the second being a number
+function buyFruit(array) {
+  return array.map(subArr => 
+    repeatStrings(subArr[0], subArr[1])).join(' ').split(' ');
+}
+
+function repeatStrings(str, times) {
+  let repeated = (str + ' ').repeat(times);
+  return repeated.slice(0, repeated.length - 1);
+}
+buyFruit([['apple', 3], ['orange', 1], ['banana', 2]]);
+// ["apple", "apple", "apple", "orange", "banana", "banana"]
