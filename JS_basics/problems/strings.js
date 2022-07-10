@@ -1244,3 +1244,64 @@ function swapCase(string) {
 }
 swapCase('CamelCase');              // "cAMELcASE"
 swapCase('Tonight on XYZ-TV');      // "tONIGHT ON xyz-tv"
+
+// 35. % of types of characters
+// Data:
+// input: string with at least one character
+// output: object w/ 3 properties:
+//    i. % of chars in the string that are lowercase letters
+//   ii. % of chars that are uppercase letters
+//   iii. % of chars that are neither
+function letterPercentages(string) {
+  let nChars = string.length;
+  let pcts = [numChars(string.match(/[a-z]/g)),
+              numChars(string.match(/[A-Z]/g)),
+              numChars(string.match(/[^a-zA-Z]/g))];
+  
+  pcts = pcts.map(num => prepPct(num / nChars));
+
+  return {lowercase: pcts[0],
+          uppercase: pcts[1],
+          neither: pcts[2]};
+}
+
+function numChars(match) {
+  return match === null ? 0 : match.length;
+}
+
+function prepPct(num) {
+  let strPct = String(num * 100);
+  let decimalIdx = strPct.indexOf(".");
+  
+  if (decimalIdx === -1 ) {
+    strPct += ".00";
+  } else {
+    let firstPart = strPct.slice(0, decimalIdx);
+    let secondPart = strPct.slice(decimalIdx, decimalIdx + 3);
+    let thirdDecimal = Number(strPct[decimalIdx + 4]);
+
+    if (secondPart.length === 2) {
+      secondPart += "0";
+    } else if (thirdDecimal >= 5) {
+      let roundUpValue = thirdDecimal + 1;
+      secondPart = secondPart.slice(0, 2) + String(roundUpValue);
+    }
+    
+    strPct = firstPart + secondPart;
+  }
+
+  return strPct;
+}
+
+// test cases:
+letterPercentages('abCdef 123');
+// { lowercase: "50.00", uppercase: "10.00", neither: "40.00" }
+
+letterPercentages('AbCd +Ef');
+// { lowercase: "37.50", uppercase: "37.50", neither: "25.00" }
+
+letterPercentages('123');
+// { lowercase: "0.00", uppercase: "0.00", neither: "100.00" }
+
+letterPercentages('aBC');
+// { lowercase: "33.33", uppercase: "66.67", neither: "0.00" }

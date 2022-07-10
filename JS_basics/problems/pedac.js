@@ -300,3 +300,174 @@ sumOfSums([3, 5, 2]);        // (3) + (3 + 5) + (3 + 5 + 2) --> 21
 sumOfSums([1, 5, 7, 3]);     // (1) + (1 + 5) + (1 + 5 + 7) + (1 + 5 + 7 + 3) --> 36
 sumOfSums([4]);              // 4
 sumOfSums([1, 2, 3, 4, 5]);  // 35
+
+// 1000 lights
+// > there's a bank of switches numbered from 1 to n
+// > Every switch ties to 1 light that is initially off
+// > on the first pass through the switches all of them
+//    are toggled
+// > on the second pass, only the even numbered (not indexed)
+//      position switches are toggled (so 2nd switch, 4th switch,
+//      6th switch)
+// > on the third pass, switches 3, 6, 9, etc are toggled
+// > the toggling process is repeated for n repetitions, where
+//      n is the argumnet passed into a function
+
+// Data: 
+// input: number that represents the number of switches and
+//    the number of repetitions of toggling switches
+// assumptions: integer input that is > 0
+// output: array of lights that are on after n repetitions
+
+// data structure to store light status + light #
+// let lights = {
+//  '1': 'off';
+//  '2': 'off';
+//  ...
+// }
+
+// iteraton pattern:
+// > toggle every light, so the incrementer would be 1 and
+//    start toggling the first light
+// > incrementer becomes 2 on 2nd iteration and toggle 2, 4, 6
+// > incrementer becomes 3 on 3rd iteration and toggle 3, 6, 9
+
+// Algorithm:
+// i. declare and initialize an incrementer that starts a 1
+// ii. declare and initialize an object whose keys are string
+//     numbers starting from 1 and going up to and including 
+//     the integer n argument <=> these are the light numbers
+//      > assign each key's value as 'off'
+// iii. iterate from 1 to n and on each iteration:
+//      > iterate through all the keys in the lights object
+//      > toggle the light numbers' values to their opposite value
+//          so 'on' becomes 'off' and 'off' becomes 'on'
+//          <=> only toggle the light numbers keys' values where
+//            the key's string number converted to a number type is
+//            a multiple of the incrementer
+//      > add 1 to the incrementer after
+// iv. filter the object's keys to only the keys that have associated
+//       values equal to 'on'
+// v. map the selected keys to numbers and return the array of numbers
+function lightsOn(numLights) {
+  let switchNums = [...Array((numLights + 1)).keys()].slice(1);
+  let switches = createLightsObj(switchNums);
+  
+  switchNums.forEach(
+    num => switches[String(num)] = 'off');
+  
+  switchNums.forEach(switchNum => {
+    for (let strNum in switches) {
+      if (Number(strNum) % switchNum === 0) {
+        switches[strNum] = switches[strNum] === 'on' ? 'off' : 'on';
+      }
+    }
+  });
+
+  return filterObjKeysByValue(switches, 'on');
+}
+
+function createLightsObj(keys) {
+  let obj = {};
+  
+  keys.forEach(num => obj[String(num)] = 'off');
+  return obj;
+}
+
+function filterObjKeysByValue(obj, desiredValue) {
+  let selectedKeys = [];
+
+  for (let property in obj) {
+    if (obj[property] === desiredValue) {
+      selectedKeys.push(Number(property));
+    }
+  }
+
+  return selectedKeys;
+}
+
+// test cases:
+lightsOn(5);        // [1, 4]
+// Detailed result of each round for `5` lights
+// Round 1: all lights are on
+// Round 2: lights 2 and 4 are now off;     1, 3, and 5 are on
+// Round 3: lights 2, 3, and 4 are now off; 1 and 5 are on
+// Round 4: lights 2 and 3 are now off;     1, 4, and 5 are on
+// Round 5: lights 2, 3, and 5 are now off; 1 and 4 are on
+
+lightsOn(100);      // [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
+
+// Problem:
+// write a function that logs a four-pointed diamond in an n x n grid
+
+// Data:
+// input: an odd integer n 
+//    > can assume only odd integers
+
+// pattern based on test cases:
+//  first row always has 1 star
+//  next row has prior row's # of stars + 2
+// ...
+//  middle row has the integer argument # of stars
+// ...
+// increment backwards until log 1 star
+
+// Algorithm:
+// i. declare a rows variable that points to an empty array
+// ii. iterate from 1 to the integer argument and on each iteration:
+//     > push a string to the rows variable where the string is created
+//       by concatenating a number of spaces with *s where there are
+//         numStars number of stars and then a number of spaces to
+//         the right of the stars
+//     numLeftSpaces = (integer argument - numStars ) / 2
+//     numRightSpaces = numLeftSpaces
+//     row = ' '.repeat(numLeftSpaces) + '*'.repeat(umStars) + ' '.repeat(numRightSpaces)
+// iii. iterate through the rows array and log each string element (a row
+//     of the n x n grid) to the console
+// iv. reverse the rows array and remove the first element (middle row w/ only stars)
+// v. iterate through the reversed array's remaining elements and log to the console
+//    each of the elements
+function diamond(n) {
+  let rows = [];
+  let numStars = [...Array(n+1).keys()].slice(1).filter(
+    num => num % 2 !== 0);
+
+  numStars.forEach(num =>
+    rows.push(createDiamondRow(num, n)));
+
+  rows.forEach(printRow);
+  rows.reverse().slice(1).forEach(printRow);
+}
+
+function createDiamondRow(numStars, length) {
+  let numSpaces = (length - numStars ) / 2;
+  let spaces = ' '.repeat(numSpaces);
+  return spaces + '*'.repeat(numStars) + spaces; 
+}
+
+function printRow(row) {
+  console.log(row);
+}
+
+// test cases:
+diamond(1);
+// logs
+// *
+
+diamond(3);
+// logs
+//  *
+// ***
+//  *
+
+diamond(9);
+// logs
+//    *
+//   ***
+//  *****
+// *******
+//*********
+// *******
+//  *****
+//   ***
+//    *

@@ -221,3 +221,4 @@ function isItemAvailable(idNum, list) {
 }
 isItemAvailable(101, transactions);     // false
 isItemAvailable(105, transactions);     // true
+

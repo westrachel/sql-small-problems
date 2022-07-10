@@ -530,3 +530,115 @@ function sum(num) {
 sum(23);           // 5
 sum(496);          // 19
 sum(123456789);    // 45
+
+// 19. convert word numbers in a string to their digit values
+// > input: string word numbers range from 0 to 9 to match phone # digits
+// > words are separated by single spaces
+function wordToDigit(string) {
+  let wordsAsDigits = {'zero': '0', 'one': '1',
+    'two': '2', 'three': '3', 'four': '4',
+    'five': '5', 'six': '6', 'seven': '7',
+    'eight': '8', 'nine': '9',
+  };
+
+  return string.split(' ').map(word => {
+    let wordLetters = word.match(/[A-Z]/gi).join('');
+    if (Object.keys(wordsAsDigits).includes(wordLetters)) {
+      let regex = new RegExp(word);
+      return word.replace(regex, wordsAsDigits[wordLetters]);
+    } else {
+      return word;
+    }
+  }).join(' ');
+}
+wordToDigit('Please call me at five five five one two three four. Thanks.');
+// "Please call me at 5 5 5 1 2 3 4. Thanks."
+
+wordToDigit('The weight is done.'); // "The weight is done."
+
+// 20. rotate last nth digit to the end of a number
+function rotateRightmostDigits(num, n) {
+  let str = String(num);
+  let indices = [...Array(str.length).keys()];
+  let idxOfCharToMove = str.length - n;
+  let rotated = '';
+
+  indices.forEach(index => {
+    if (index !== idxOfCharToMove) {
+      rotated += str[index];
+    }
+  });
+
+  return Number(rotated + str[idxOfCharToMove]);
+}
+rotateRightmostDigits(735291, 1);      // 735291
+rotateRightmostDigits(735291, 2);      // 735219
+rotateRightmostDigits(735291, 3);      // 735912
+rotateRightmostDigits(735291, 4);      // 732915
+rotateRightmostDigits(735291, 5);      // 752913
+rotateRightmostDigits(735291, 6);      // 352917
+
+
+
+
+
+function letterPercentages(string) {
+  let nChars = string.length;
+  let pcts = [string.match(/[a-z]/g).length,
+              string.match(/[A-Z]/g).length,
+              string.match(/[^a-zA-Z]/g).length];
+  
+  pcts = pcts.map(num => prepPct(num / nChars));
+
+  return {lowercase: pcts[0],
+          uppercase: pcts[1],
+          neither: pcts[2]};
+}
+
+function prepPct(num) {
+  let strPct = String(num * 100);
+  let decimalIdx = strPct.indexOf(".");
+  let numDecimals = strPct.slice(decimalIdx).length;
+  
+  if (decimalIdx === -1 ) {
+    strPct += ".00";
+  } else if (numDecimals > 3) {
+    let firstPart = strPct.slice(0, decimalIdx);
+    let secondPart = strPct(decimalIdx, decimalIdx + 3);
+
+    if (Number(strPct[decimalIdx + 4]) >= 5) {
+      let roundUpValue = Number(secondPart[decimalIdx + 3]) + 1;
+      secondPart[decimalIdx + 3] = String(roundUpValue);
+    }
+
+    strPct = firstPart + secondPart;
+
+  } else if (numDecimals < 3) {
+    let firstPart = strPct.slice(0, decimalIdx);
+    let decimals = strPct.slice(decimalIdx);
+
+    switch (decimals.length) {
+      case 1:
+        decimals += "00";
+        break;
+      case 2:
+        decimals += "0";
+        break;
+    }
+    strPct = firstPart + decimals;
+  }
+
+  return strPct;
+}
+// test cases:
+letterPercentages('abCdef 123');
+// { lowercase: "50.00", uppercase: "10.00", neither: "40.00" }
+
+letterPercentages('AbCd +Ef');
+// { lowercase: "37.50", uppercase: "37.50", neither: "25.00" }
+
+letterPercentages('123');
+// { lowercase: "0.00", uppercase: "0.00", neither: "100.00" }
+
+console.log(letterPercentages('aBC'));
+// { lowercase: "33.33", uppercase: "66.67", neither: "0.00" }
