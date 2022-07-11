@@ -471,3 +471,136 @@ diamond(9);
 //  *****
 //   ***
 //    *
+
+
+// Problem:
+// write a function that implements the Caesar Cipher
+// > Caesar Cipher: substitutes a letter by another letter located a given number of positions away in the alphabet
+// Ex: letter 'A' is right-shifted by 3 spots, it's substituted with the letter 'D'
+//    <=> the specific shift value is the 'key'
+
+// requirements:
+// > only encrypt letters (including both lower + upper case)
+// > Any other character is left as is
+// > The substituted letters are in the same letter case as the original letter
+// > If the key value for shifting exceeds the length of the alphabet, it wraps around from the beginning
+
+// Data:
+// > input: string first argument, that is the string to be encrypted & a numerical key value that
+//    represents the number of positions to shift the given letters by
+// <=> assuming 2nd argument can be negative or positive, but will be a number
+// > output: encrypted string
+
+// Algorithm:
+// i. declare an array that contains all alphabetical letters a - z <=> put this in a helper method that
+//     defines either an array of all uppercased or all lower cased letters based on an argument passed to
+//     the method
+//   > a is located at the 0th index, b is located at the first index, ..., z is located at the 25th index
+//   > array's case should be uniform
+// ii. 
+// iii. iterate through the given string and translate the characters as necessary
+//      > to check if the character being iterated over does need to be translated, check if it's an
+//          alphabetical letter or not
+//      > if it's not an alphabetical letter, return the character as is to the new string that will
+//          hold the translated letters
+// iv. if the character is an alphabetical lettr, then find it's index position in the array previusly
+//      declared
+//       > select the array that has the appropriate case for the letter
+// v. add the 2nd argument's numerical value to the letter's index position
+// vi. check if the result of the addition is greater than 25 or less than 0
+//      > if the result of the addition is greater than 25, then find the difference between
+//         the summation and 25 and subtract 1 to find the index position of the shifted
+//         new character
+//         ex: letter is "X" which has index position of 23 and 2nd argument is 3
+//            summation = 3 + 23 = 26
+//            new index = 26 - 25 - 1 = 0
+//              x, y, z, a, b 
+//      > if the result of the addition is less than 0, then add that negative difference
+//          to 25 and add 1 and that will be the index of the shifted character
+//         ex: letter 'C' will have index position 2 and the 2nd numerical argument is -5
+//              difference = 2 + (-5) = -3 
+//              new index = 25 + (-3) + 1 = 23
+//               x, y, z, a, b, c
+// vii. use the index position of the new character found in the prior step to subset the desired
+//    character from the appropriately cased array
+// viii. push the subsetted character to the new string holding translated letters
+// ix. return the new string created with all shifted characters
+function caesarEncrypt(str, num) {
+  num = decrementNumericalShifter(num);
+
+  return str.split('').map(char => {
+    if (!char.match(/[A-Z]/i)) {
+      return char;
+    } else if (char.match(/[A-Z]/)) {
+      return rotateLetter('uppercase', num, char);
+    } else {
+      return rotateLetter('lowercase', num, char);
+    }
+  }).join('');
+}
+
+function decrementNumericalShifter(num) {
+  if (num > 26) {
+    while (num > 26) {
+      num -= 26;
+    }
+  } else if (num < -26) {
+    while (num < -26) {
+      num += 26;
+    }
+  }
+
+  return num;
+}
+
+function rotateLetter(letterCase, n, letter) {
+  const ABCS = casedAlphabet(letterCase);
+  let currIdx = ABCS.indexOf(letter);
+  let newIdx = currIdx + n;
+
+  if (newIdx > 25) {
+    newIdx = newIdx - 25 - 1;
+  } else if (newIdx < 0) {
+    newIdx = newIdx + 25 + 1;
+  }
+
+  return ABCS[newIdx];
+}
+
+function casedAlphabet(upperCaseFlag) {
+  const ABCS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+    'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S',
+    'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+
+  if (upperCaseFlag === 'uppercase') {
+    return ABCS;
+  } else {
+    return ABCS.map(letter => letter.toLowerCase());
+  }
+}
+
+
+// Test Cases:
+// simple shift
+caesarEncrypt('A', 0);       // "A"
+caesarEncrypt('A', 3);       // "D"
+caesarEncrypt('C', -5);     // "X"
+caesarEncrypt('X', 3);      // "A"
+caesarEncrypt('C', -31);     // "X"
+
+// wrap around
+caesarEncrypt('y', 5);       // "d"    <=> "y", "z", "a", "b", "c", "d"
+caesarEncrypt('a', 47);      // "v"
+caesarEncrypt('a', 73);      // "v"
+
+// all letters
+caesarEncrypt('ABCDEFGHIJKLMNOPQRSTUVWXYZ', 25);
+// "ZABCDEFGHIJKLMNOPQRSTUVWXY"
+
+caesarEncrypt('The quick brown fox jumps over the lazy dog!', 5);
+// "Ymj vznhp gwtbs ktc ozrux tajw ymj qfed itl!"
+
+
+// many non-letters
+caesarEncrypt('There are, as you can see, many punctuations. Right?; Wrong?', 2);
+// "Vjgtg ctg, cu aqw ecp ugg, ocpa rwpevwcvkqpu. Tkijv?; Ytqpi?"

@@ -579,9 +579,8 @@ rotateRightmostDigits(735291, 5);      // 752913
 rotateRightmostDigits(735291, 6);      // 352917
 
 
-
-
-
+// 21. find the % of occurrences of different types of
+//  letters in a given string
 function letterPercentages(string) {
   let nChars = string.length;
   let pcts = [string.match(/[a-z]/g).length,
@@ -642,3 +641,178 @@ letterPercentages('123');
 
 console.log(letterPercentages('aBC'));
 // { lowercase: "33.33", uppercase: "66.67", neither: "0.00" }
+
+// 22. max rotate the digits in a number
+// > Take the number 735291 & rotate it by one digit to the left, getting 352917
+// > Next, keep the first digit fixed in place & rotate the remaining digits to get 329175
+// > Keep the first two digits fixed in place and rotate again to get 321759
+// > Keep the first three digits fixed in place and rotate again to get 321597
+// > Finally, keep the first four digits fixed in place and rotate the final two digits to get 321579
+// > The resulting number is called the maximum rotation of the original number
+function maxRotation(num) {
+  for (let x = String(num).length; x > 1; x -= 1) {
+    num = rotateRightmostDigits(num, x);
+  }
+
+  return num;
+}
+
+maxRotation(735291);          // 321579
+maxRotation(3);               // 3
+maxRotation(35);              // 53
+maxRotation(105);             // 15 -- the leading zero gets dropped
+maxRotation(8703529146);      // 7321609845
+
+// 23. triangle type
+// > valid triangles must have the shorter 2 sides sum to a value
+//     that exceeds the largest side
+// > if all lengths are equal then it's equilateral
+// > all lengths must exceed 0
+// > 2 equivalent sides is isosceles
+// > all different sides is scalene
+function triangleType(...args) {
+  if (invalidLengths(args)) {
+    return "invalid";
+  } else if (equilateral(args)) {
+    return "equilateral";
+  } else if (isosceles(args)) {
+    return "isosceles";
+  } else {
+    return "scalene";
+  }
+}
+
+function invalidLengths(lengths) {
+  let positives = lengths.filter(positives);
+
+  let max = Math.max(...lengths);
+  let mins = lengths.filter((length, idx, arr) =>
+    idx !== arr.indexOf(max));
+
+  return max > mins[0] + mins[1] || positives.length === 0;
+}
+
+function positives(number) {
+  return number > 0;
+}
+
+function equilateral(lengths) {
+  return lengths[0] === lengths[1] &&
+         lengths[1] === lengths[2];
+}
+
+function isosceles(lengths) {
+  return lengths[0] === lengths[1] ||
+         lengths[1] === lengths[2];
+}
+
+triangleType(3, 3, 3);        // "equilateral"
+triangleType(3, 3, 1.5);      // "isosceles"
+triangleType(3, 4, 5);        // "scalene"
+triangleType(0, 3, 3);        // "invalid"
+triangleType(3, 1, 1);        // "invalid"
+
+// 24. triangle angle classification
+function triAngleType(...args) {
+  if (invalidAngles(args)) {
+    return "invalid";
+  } else if (args.includes(90)) {
+    return "right";
+  } else if (args.filter(lessThan90).length === 3) {
+    return "acute";
+  } else {
+    return "obtuse";
+  }
+}
+
+function lessThan90(num) {
+  return num < 90;
+}
+
+function invalidAngles(angles) {
+  return angles.filter(positives).length < 3 ||
+    angles.reduce((sum, value) =>  sum + value) !== 180;
+}
+
+triAngleType(60, 70, 50);       // "acute"
+triAngleType(30, 90, 60);       // "right"
+triAngleType(120, 50, 10);      // "obtuse"
+triAngleType(0, 90, 90);        // "invalid"
+triAngleType(50, 50, 50);       // "invalid"
+
+// 25. calculate the difference between the swuare of the sum of the first
+// n positive integers and the sum of the squares of the first n positive
+// integers
+// > if n (provided argument) is 3:
+//     (1 + 2 + 3)**2 - (1**2 + 2**2 + 3**2)
+function sumSquareDifference(n) {
+  let nums = [...Array(n + 1).keys()].slice(1);
+  let squareOfSums = square(nums.reduce(add));
+  let sumOfSquares = nums.map(square).reduce(add);
+
+  return squareOfSums - sumOfSquares;
+}
+
+function add(num1, num2) {
+  return num1 + num2;
+}
+
+function square(num) {
+  return num ** 2;
+}
+
+sumSquareDifference(3);      // 22 
+sumSquareDifference(10);     // 2640
+sumSquareDifference(1);      // 0
+sumSquareDifference(100);    // 25164150
+
+// 26. find the next featured number
+// featured number = odd number that is a multiple of 7, with all of its digits
+//     occurring exactly once each
+// Ex: 49 is a featured number
+//     98 is not (it is not odd), 97 is not (it is not a multiple of 7), and
+//        133 is not (the digit 3 appears twice).
+// > return a string msg if no next feature number available
+//     >> The largest possible featured number is 9876543201.
+// smallest possible featured number is 7
+function featured(num) {
+  let startMultiple = Math.ceil(num / 7) * 7;
+
+  for (let feature = startMultiple; feature <= 9876543201; feature += 7) {
+    if (isOdd(feature) && uniqueDigits(feature) && feature > num) {
+      return feature;
+    }
+  }
+
+  return "There is no possible number that fulfills those requirements.";
+}
+
+function uniqueDigits(feature) {
+  let digits = String(feature);
+
+  return digits.split('').every((char, idx, chars) =>
+    chars.indexOf(char) === idx &&
+    chars.lastIndexOf(char) === idx);
+}
+
+function isOdd(num) {
+  return num % 2 !== 0;
+}
+
+featured(12);           // 21
+featured(20);           // 21
+featured(21);           // 35
+featured(997);          // 1029
+featured(1029);         // 1043
+featured(999999);       // 1023547
+featured(999999987);    // 1023456987
+featured(9876543186);   // 9876543201
+featured(9876543200);   // 9876543201
+featured(9876543201);   // "There is no possible number that fulfills those requirements."
+
+
+
+
+
+
+
