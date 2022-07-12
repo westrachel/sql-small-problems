@@ -604,3 +604,219 @@ caesarEncrypt('The quick brown fox jumps over the lazy dog!', 5);
 // many non-letters
 caesarEncrypt('There are, as you can see, many punctuations. Right?; Wrong?', 2);
 // "Vjgtg ctg, cu aqw ecp ugg, ocpa rwpevwcvkqpu. Tkijv?; Ytqpi?"
+
+
+// Vigenere Cipher
+// requirements:
+// > shift value used for a letter is equal to its index value in the alphabet
+//     'b' has an index of 1 <=> A-Z have indices 0 - 25 and a-z also have indices
+//        0 - 25
+// > only encrypt alphabetical letters 
+
+// Data:
+// input: string and a keyword
+// output: translated string
+
+// Algorithm:
+// i. declare a keyword index that starts at 0 and will increment
+//  up to the largest index of the given keyword string argument
+// ii. declare a translated word empty string
+// iii. loop through all the letters in the given string argument
+// iv. on each iteration:
+//   > check if the character is not alphabetical and if
+//      it's not, then push the character as is to the translated string
+//   > subset the given keyword to the letter that is at the numerical index
+//        position where the numerical value is the keyword index's numerical value
+//   > find the alphabetical index position of the subsetted letter of the
+//      keyword <=> this is the current shift value for the alphabetical letter
+//       being iterated over
+//   > find the alphabetical index position of the current letter being iterated
+//       over that needs to be shifted
+//   > find the shifted letter by adding the current letter's index position
+//   to the index position of the keyword's character in scope and then subtract 1
+//   <=> then check if this value is greater than 25, and if it is subtract 25
+//      to get the index of the shifted letter
+//   > push to the translated empty string the shifted letter found
+//      <=> the shifted letter is found by using bracket notation to subset either
+//        an uppercase alphabet constant array or a lowercase constant array w/
+//        the index derived from the prior step
+//   > add 1 to the number keyword index points to and check if keyword index points
+//     to a number greater than its max index value <=> if it does then reassign
+//     the keyword index to 0 (this should happen before the next iteration begins)
+//       <=> only add 1 to the keword index if the character being iterated over is
+//          a letter
+// vi. return the translated string
+function vigenereCipher(plaintext, keyword) {
+  const UPPER_ABCS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const LOWER_ABCS = 'abcdefghijklmnopqrstuvwxyz';
+  let translatedText = '';
+  let keyIdx = 0;
+  keyword = keyword.toUpperCase();
+  let key;
+
+  plaintext.split('').forEach(char => {
+    if (char.match(/[A-Z]/)) {
+      key = UPPER_ABCS.indexOf(keyword[keyIdx]);
+      translatedText += encrypt(char, key, UPPER_ABCS);
+      keyIdx = (keyIdx + 1) % keyword.length;
+    } else if (char >= 'a' && char <= 'z') {
+      key = UPPER_ABCS.indexOf(keyword[keyIdx]);
+      translatedText += encrypt(char, key, LOWER_ABCS);
+      keyIdx = (keyIdx + 1) % keyword.length;
+    } else {
+      translatedText += char;
+    }
+  });
+
+  return translatedText;
+}
+
+function encrypt(letter, key, alphabet) {
+  const letterPos = alphabet.indexOf(letter);
+
+  for (let step = 1; step <= key; step += 1) {
+    if (!alphabet[letterPos + step]) {
+      alphabet += alphabet;
+    }
+
+    letter = alphabet[letterPos + step];
+  }
+
+  return letter;
+}
+
+//Applying the Vigenere Cipher for each alphabetic character:
+//plaintext : Pine appl esdo ntgo onpi zzas
+//shift     : meat meat meat meat meat meat
+//ciphertext: Bmnx mtpe qwdh zxgh arpb ldal
+
+vigenereCipher("Pineapples don't go on pizzas!", "meat");
+// result: Bmnxmtpeqw dhz'x gh ar pbldal!
+
+
+// Problem:
+// write a function that displays an 8-pointed star in an nxn grid
+
+// data:
+// input: n is an odd integer argument, the smallest n is 7
+// output: log to the console a star created via star characters
+//   and spaces
+
+// n === 7:
+// first row: *, space, space, star, space, space, star
+// second row: space, *, space, *, space, *, space
+// third row: 2 spaces, 3 stars, 2 spaces
+// fourth row/middle row: 7 stars
+// fifth row: is same as 3rd row
+// sixth row: is same as 2nd row
+// 7th row: is same as 1st row
+
+// logic/data structure:
+// > store rows in an array
+// > all rows except the middle row have 3 stars no matter what n is
+// > there are fewer spaces between stars in a non-middle row, the closer
+//     you get to the middle row
+// > number of spaces = n - 3 
+//     > odd number minus 3 is always an even number
+// > 1st row:
+//     * + ' '.repeat((n - 3)/2) + * + ' '.repeat((n - 3)/2) + '*'
+//  > 2nd row: 
+//    ' ' + * + ' '.repeat((n - 3 - 2)/2) + * + ' '.repeat((n - 3 - 2)/2)) + '*' + ' '
+// > 3rd row:
+//    ' '.repeat(2) + '*' + ' '.repeat((n - 3 - 2 - 2)/2) + '*' + ' '.repeat((n - 3 - 2 - 2)/2) + '*' + ' '
+
+// incremental logic for a row:
+// row 1:
+//   let initialEndingSpaces = 0;
+//   let middleSpacesNumerator = n - 3;
+//   let middleSpaces = middleSpacesNumerator / 2;
+
+// row 2:
+//   initialEndingSpaces += 1;
+//   let middleSpacesNumerator -= 2;
+//   middleSpaces = middleSpacesNumerator / 2;
+
+// row 3:
+//   initialEndingSpaces += 1;
+//   let middleSpacesNumerator -= 2;
+//   middleSpaces = middleSpacesNumerator / 2;
+
+// ...
+// middle row:
+// n number of stars <=> '*'.repeat(n);
+
+// finding the middle row:
+// Math.ceil(n / 2);
+
+// Algorithm:
+// i. declare initialEndingSpaces to zero, the middleSpacesNumerator to n - 3, and
+//  the middleSpaces to middleSpacesNumerator / 2
+// ii. declare an array to store individual rows up through & exclusive of the middle row
+// iii. iterate from 1 to n / 3 - 2 floored and on each iteration derive the
+//     space and star pattern string row:
+//     ' '.repeat(initialEndingSpaces) + * + ' '.repeat(middleSpaces) + * + 
+//           ' '.repeat(middleSpaces) + '*' + ' '.repeat(initialEndingSpaces)
+//     <=> this derives all the rows w/ only 3 stars
+//    > after deriving the row and pushing the row to the array, subtract
+//       2 from the number middleSpacesNumerator points to and add 1
+//        to the number initialEndingSpaces points to and then rederive
+//        middleSpaces as middleSpacesNumerator / 2
+// iv. iterate through the array of rows and log each value to the console
+// v. log to the console the middle row which has n number of stars repeated
+// vi. log to the console the elements of the array in reversed order
+function star(n) {
+  let initialEndingSpaces = 0;
+  let middleSpacesNumerator = n - 3;
+  let middleSpaces = middleSpacesNumerator / 2;
+  let rows = [];
+
+  for (let rowNum = 1; rowNum <= Math.ceil((n - 3) / 2); rowNum += 1) {
+    rows.push(createRow(initialEndingSpaces, middleSpaces));
+
+    initialEndingSpaces += 1;
+    middleSpacesNumerator -= 2;
+    middleSpaces = middleSpacesNumerator / 2;
+  }
+
+  let threeStarRow = ' '.repeat((n - 3) / 2) + '***' + ' '.repeat((n - 3) / 2);
+  rows.push(threeStarRow);
+
+  printStarRow(rows);
+  printStarRow(['*'.repeat(n)]);
+  printStarRow(rows.reverse());
+}
+
+function createRow(initialSpaces, middleSpaces) {
+  let outerSpace = ' '.repeat(initialSpaces);
+  let innerSpace = ' '.repeat(middleSpaces);
+
+  return outerSpace + '*' + innerSpace + '*' +
+    innerSpace + '*' + outerSpace;
+}
+
+function printStarRow(rows) {
+  rows.forEach(row => console.log(row));
+}
+
+// test cases:
+star(7);
+// logs
+//*  *  *
+// * * *
+//  ***
+//*******
+//  ***
+// * * *
+//*  *  *
+
+star(9);
+// logs
+//*   *   *
+// *  *  *
+//  * * *
+//   ***
+//*********
+//   ***
+//  * * *
+//*  *  *
+//*   *   *
