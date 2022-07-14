@@ -820,3 +820,419 @@ star(9);
 //  * * *
 //*  *  *
 //*   *   *
+
+// Problem:
+// Data:
+// input: string
+// output: string that indicates if the number is valid or not according to the luhn
+//    formula
+
+// requirements:
+// > can ignore all non-numeric characters in the given string argument
+// > This number must pass the following test:
+//     > from right to left, double the value of every second digit 
+//         <=> first digit to double is located at the length - 2 idx position of
+//              the corresponding string
+// > For any digit the becomes 10 or more, subtract 9 from the result
+//       1111 becomes 2121
+//       8763 becomes 7733 
+//          <=> 2 x 6 = 12 -> 12 - 9 = 3 
+//          <=> 2 x 8 = 16 -> 16 - 9 = 7
+// > Add all these digits together to calculate the checksum
+//     1111 becomes 2121 sums as 2 + 1 + 2 + 1 to give a checksum of 6
+//     8763 becomes 7733, and 7 + 7 + 3 + 3 is 20
+// > If the checksum ends in 0 then the number is valid according to the Luhn Formula
+//     > otherwise, it is not valid
+//        >> 1111 is not valid (it comes out to 6), 
+//        >> 8763 is valid (it comes out to 20)
+
+// algorithm:
+// i. select all numeric characters and reverse the characters
+// ii. map the selected reversed characters and transform each character to a number
+//   and if the index is odd of the character then multiply its number form by 2
+// iii. sum all the mapped numbers to calc the checksum
+// iv. check if the last digit of the checksum is 0 or not
+//      > can us a ternary statement that returns 'valid' if the last digit is 0
+//        or 'invalid' otherwise
+function luhn(str) {
+  let digits = str.split('').filter(char =>
+    char.match(/\d/)).reverse();
+  
+  digits = digits.map((num, idx) => {
+      num = Number(num);
+      if (idx % 2 !== 0) {
+        num *= 2;
+      }
+      return num >= 10 ? num - 9 : num;
+    });
+  
+  let checksum = sum(digits);
+  let end = lastDigit(checksum);
+
+  return end === "0" ? 'valid' : 'invalid';
+}
+
+function sum(nums) {
+  return nums.reduce((total, num) =>
+    total + num);
+}
+
+function lastDigit(num) {
+  let str = String(num);
+  return str[str.length - 1];
+}
+
+luhn("2323 2005 7766 3554"); // valid
+luhn("1111"); // invalid
+luhn("8763"); // valid
+luhn("8763A"); // valid
+
+// Problem:
+// Data:
+// input: array of numbers  (at least 1 number)
+// output: array of numbers that inicate the counts of all the
+//    other numbers that are smaller than it that exist in the given array
+
+// requirements:
+// > only count unique values
+// > returned array should list the counts for duplicate numbers as many
+//    time as that duplicate occurs
+
+// Algorithm:
+// i. find all the unique numbers in the given array
+// ii. push each number as a key in an object that will store the count
+// iii. find the appropriate value for each key
+//      > iterate through the array of unique numbers and filter to all 
+//         numbers that are less than the number value of the key being
+//         considered
+//      > find the length of the array returned from filtering
+//      > assign the length as the value associated with the string key
+// iv. iterate through the given array and look up the count value
+//      associated with the string from the object
+// v. return the mapped array
+function smallerNumsThanCurrent(arr) {
+  let uniqueNums = unique(arr);
+  let counts = {};
+
+  uniqueNums.forEach(key => {
+    counts[key] = numValsLessThan(key, uniqueNums);
+  });
+
+  return arr.map(num => counts[num]);
+}
+
+function numValsLessThan(value, nums) {
+  return nums.filter(num => num < value).length;
+}
+
+function unique(array) {
+  let uniqueVals = [];
+
+  array.forEach(element => {
+    if (!uniqueVals.includes(element)) {
+      uniqueVals.push(element);
+    }
+  });
+
+  return uniqueVals;
+}
+
+// test cases:
+smallerNumsThanCurrent([8,1,2,2,3]);            // [3, 0, 1, 1, 2]
+smallerNumsThanCurrent([1,4,6,8,13,2,4,5,4]);   // [0, 2, 4, 5, 6, 1, 2, 3, 2]
+smallerNumsThanCurrent([7,7,7,7]);              // [0,0,0,0]
+smallerNumsThanCurrent([6,5,4,8]);              // [2, 1, 0, 3]
+smallerNumsThanCurrent([1]);                   // [0]
+
+// Problem:
+// Data:
+// input: array of integers
+// output: the minimum sum of 5 consecutive numbers in the array
+
+//  requirements:
+//   > return null if the array contains < 5 elements or any non numbers
+
+// Algorithm:
+// i. filter the given array to all elements that when converted to string
+//   characters, they match a numerical digit
+// ii. find the length of the filtered array and if it's not >= 5 and equivalent
+//     to the length of the given array then return null
+// iii. find all consecutive sequences of 5 numbers
+//      > find the index that is 4 elements away from the ending index
+//          let maxIdx = arr.length - 1;
+//          let lastSliceStartingIdx = maxIdx - 4;
+//      > iterate from 0 up to the lastSliceStartingIdx and on each iteration:
+//         > slice the given array starting at the index being iterated over
+//          and with a length of 5 elements (so 2nd argument of slice 
+//          should be 6)
+//         > push each slice as a subarray to an array of all consecutive 5 digits
+// iv. map over all subarrays and find the sum of all the numbers in the subarray
+// v. filter to the smallest sum and return this value
+
+function minSum(arr) {
+  if (!validArrOfNums(arr)) {
+    return null;
+  }
+
+  let maxIdx = arr.length - 1;
+  let lastSliceStartingIdx = maxIdx - 4;
+  let slices = [];
+
+  for (let idx = 0; idx <= lastSliceStartingIdx; idx += 1){
+    let IdxFirstElementToExclude = idx + 5;
+    slices.push(arr.slice(idx, IdxFirstElementToExclude));
+  }
+
+  return min(slices.map(sumOfFives));
+}
+
+function min(arr) {
+  return arr.reduce((num1, num2) => {
+    if (num1 < num2) {
+      return num1;
+    } else {
+      return num2;
+    }
+  });
+}
+
+function sumOfFives(arr) {
+  return arr.reduce((total, num) => total + num);
+}
+
+function validArrOfNums(arr) {
+  let digits = arr.filter(element => 
+    String(element).match(/\d/));
+
+  return digits.length === arr.length && arr.length >= 5;
+}
+
+minSum([1, 2, 3, 4]);       // null
+minSum([1, 2, 3, 4, 5, 6]); // 15
+minSum([55, 2, 6, 5, 1, 2, 9, 3, 5, 100]); // 16
+minSum([-1, -5, -3, 0, -1, 2, -4]); // -10
+
+
+// Problem:
+// Data:
+// input: string letters
+// output: same sequence of characters with every 2nd character in
+//    every 3rd word converted to uppercase
+
+// requirements:
+// word: separated by single bases and consists of only alphabetical letters
+// strings will always contain at least one word
+
+// Algorithm:
+// i. split the given string into words by splitting at single spaces
+// ii. iterate through the every 3rd word
+//   > first word is at the 0th index
+//   > every 3 word indices = 2, 5, 8, 11... 
+// iii. replace every 3rd word with its mapped string word
+//      > split the word into its characters
+//      > map the characters
+//         > if the character's idx is odd, then capitalize the letter at that index
+//         > if the character's idx is not odd, then leave the letter as is
+//      > join the characters together to find the translated word
+//      > reassign the word at the array's index that's currently being iterated over
+//        to the translated word
+// iv. join with spaces all the words in the array
+function toWeirdCase(str) {
+  let words = str.split(' ');
+  
+  for (let idx = 2; idx < words.length; idx += 3) {
+    let word = words[idx];
+    let mappedWord = upperEverySecondChar(word);
+    
+    words[idx] = mappedWord;
+  }
+
+  return words.join(' ');
+}
+
+function upperEverySecondChar(word) {
+  let chars = word.split('');
+  
+  return chars.map((char, idx, arr) => {
+    if (idx % 2 !== 0) {
+      return char.toUpperCase();
+    } else {
+      return char;
+    }
+  }).join('');
+}
+
+
+toWeirdCase('Lorem Ipsum is simply dummy text of the printing'); 
+// 'Lorem Ipsum iS simply dummy tExT of the pRiNtInG'
+
+toWeirdCase('It is a long established fact that a reader will be distracted'); 
+// 'It is a long established fAcT that a rEaDeR will be dIsTrAcTeD'
+  
+toWeirdCase('aaA bB c'); // 'aaA bB c'
+
+toWeirdCase('Miss Mary Poppins word is supercalifragilisticexpialidocious'); 
+//'Miss Mary POpPiNs word is sUpErCaLiFrAgIlIsTiCeXpIaLiDoCiOuS'
+
+
+// Problem:
+// Data:
+// input: array of integers
+// output: 2 numbers that are closest together in value returned in an array
+
+// requirements:
+// > if there are 2 cases of the same difference in value, then return a subarray
+// that has the pair of numbers that appear first in the string
+// > can assume all inputs will be arrays of 2 or more integers
+
+// Algorithm:
+// i. find all unique possible pairs of numbers of the given array
+//    > declare a new array to store pairs <=> assign it to an empty array
+//    > iterate through each number in the given array and on each iteration:
+//       > iterate through the remaining numbers in the array
+//          > can create a for loop where the starting idx is 1 plus the idx of 
+//              the number in the outer loop
+//          > the inner loop should loop while it's less than the length of the given array
+//          > create a subarray where the first element is the outer number being iterated
+//            over and the second element is the inner loop's current number being iterated
+//            over
+//          > check if the declared array that stores pairs already includes the subarray pair
+//              > if it does then don't add the subarray to it, if it doesn't then push
+//                the pair to the array of pairs
+// ii. iterate over the array of pairs and map the subarrays via the following:
+//         > find the difference between the 2 numbers in the pair
+//             > find the max of the 2 numbers in the pair and the min of the 2 numbers in the pair
+//             > difference = max - min
+//         > store the difference as the 2nd element of each subarray <=> so push to the end
+//           of the subarray
+// iii. sort the subarrays based on the size of the 3rd element in each subarray
+//       > specifically, I want to order the subarrays based on the smallest difference
+//          > in the callback, I want to return a negative value if the subarray1 has a smaller
+//             3rd element than subarray2
+// iv. extract out the first element of the sorted array and return a slice of that subarray
+//       element from the 0th index to the 2nd index (the 2nd index is excluded)
+function closestNums(arr) {
+  let pairs = uniquePairs(arr);
+  
+  let pairsDiffs = pairs.map(pair => {
+    let diff = difference(pair);
+    pair.push(diff);
+    return pair;
+  });
+
+  pairsDiffs.sort((pair1, pair2) => {
+    if (pair1[2] < pair2[2]) {
+      return -1;
+    } else if (pair1[2] > pair2[2]) {
+      return 1;
+    } else {
+      return -1;
+    }
+  });
+
+  return pairsDiffs[0].slice(0, 2);
+}
+
+function difference(nums) {
+  let max = nums[0] >= nums[1] ? nums[0] : nums[1];
+  let min = nums[0] < nums[1] ? nums[0] : nums[1];
+
+  return max - min;
+}
+
+function uniquePairs(arr) {
+  let pairs = [];
+
+  arr.forEach((num, outerIdx, arr) => {
+    for (let innerIdx = outerIdx + 1; innerIdx < arr.length; innerIdx += 1) {
+      let pair = [num, arr[innerIdx]];
+
+      if (!pairs.includes(pair)) {
+        pairs.push(pair);
+      }
+    }
+  });
+
+  return pairs;
+}
+
+// test cases:
+closestNums([5, 25, 15, 11, 20]);      // [15, 11]
+closestNums([19, 25, 32, 4, 27, 16]); // [25, 27]
+closestNums([12, 7, 17]);            // [12, 7]
+closestNums([12, 7, 1, 17, 22]);     // [12, 7]
+
+// Problem:
+// Data:
+// input: string argument with at least one character
+// output: 
+//    > character that occurs least often in the given string
+//    > If there are multiple characters with the equal lowest number
+//       of occurrences, then return the one that appears first in the
+//        string
+
+// Requirements:
+// characters are not case sensitive 
+
+// Algorithm:
+// > declare an object whose keys will be individual characters and the
+//     values will be the count of the number of times the character
+//     occurs in the string
+// > iterate through the characters of the string and on each iteration:
+//     > check if the lowercased character already is a key in the object
+//        > if it is then add 1 to the corresponding value
+//        > if it's not then establish it as a key and assign it to a value of 1
+// > sort the object's values from smallest to largest
+// > from the sorted array of values, I want to select the smallest count
+//     which after sorting is the element at the 0th index
+// > iterate through the characters of the given string and check if the
+//     lowercased character key's associated value in the object of counts
+//     is equivalent to the smallest count previously found
+//       > if the values are equivalent then stop iterating and return
+//         the current character being iterated over
+function leastCommonChar(string) {
+  let counts = charCounts(string);
+  let smallestCount = Object.values(counts).sort(ascendingOrder)[0];
+
+  for (let idx = 0; idx < string.length; idx += 1) {
+    let key = string[idx].toLowerCase();
+    
+    if (counts[key] === smallestCount) {
+      return string[idx];
+    }
+  }
+  
+}
+
+function ascendingOrder(num1, num2) {
+  if (num1 < num2) {
+    return -1;
+  } else if (num1 > num2) {
+    return 1;
+  } else {
+    return 0;
+  }
+}
+
+function charCounts(str) {
+  let counts = {};
+
+  str.split('').forEach(char => {
+    let key = char.toLowerCase();
+
+    if (Object.keys(counts).includes(key)) {
+      counts[key] += 1;
+    } else {
+      counts[key] = 1;
+    }
+  });
+
+  return counts;
+}
+
+// test cases:
+leastCommonChar("Hello World");   // "H"
+leastCommonChar("Peter Piper picked a peck of pickled peppers"); // "t"
+leastCommonChar("Mississippi");   // "M"
+leastCommonChar("Happy birthday!");  // ' '
+leastCommonChar("aaaaaAAAA");       // 'a'
