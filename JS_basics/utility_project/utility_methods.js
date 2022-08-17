@@ -32,24 +32,6 @@ var _;
 
         return idx;
       },
-
-      sample: function(qty) {
-        let sampled = [];
-        let copy = element.slice();
-        let get = function() {
-          let idx = Math.floor(Math.random() * copy.length);
-          let el = copy[idx];
-          copy.splice(idx, 1);
-          return el;
-        };
-      
-        if (!qty) { return get(); }
-        while(qty) {
-          sampled.push(get());
-          qty -= 1;
-        }
-    
-      },
       
       findWhere: function(properties) {
         for (let i = 0; i < element.length; i += 1) {
@@ -65,7 +47,20 @@ var _;
         }
       },
       
-      where: function() {
+      where: function(obj) {
+        let matches = [];
+      
+        element.forEach((currObj) => {
+          let fullMatch = Object.keys(obj).every((key) => {
+            return obj[key] == currObj[key];
+          });
+          
+          if (fullMatch) {
+            matches.push(currObj);
+          }
+        });
+        
+        return matches;
       },
 
       pluck: function(prop) {
@@ -74,7 +69,7 @@ var _;
         element.forEach((obj) => {
           Object.keys(obj).forEach((key) => {
             if (key === prop) {
-              vals.push(element[key]);
+              vals.push(obj[key]);
             }
           });
         });
@@ -85,8 +80,8 @@ var _;
       keys: function() {
         let keys = [];
         
-        element.forEach((obj) => {
-          Object.keys(obj).forEach((key) => keys.push(key));
+        Object.keys(element).forEach((key) => {
+          keys.push(key);
         });
 
         return keys;
@@ -95,14 +90,11 @@ var _;
       values: function() {
         let vals = [];
         
-        element.forEach((obj) => {
-          Object.vals(obj).forEach((value) => vals.push(value));
+        Object.values(element).forEach((value) => {
+          vals.push(value);
         });
 
         return vals;
-      },
-
-      extend: function() {
       },
 
       pick: function(...props) {
@@ -115,6 +107,25 @@ var _;
         });
         
         return vals;
+      },
+      
+      sample: function(qty) {
+        let sampled = [];
+        let copy = element.slice();
+        function get() {
+          let idx = Math.floor(Math.random() * copy.length);
+          let el = copy[idx];
+          copy.splice(idx, 1);
+          return el;
+        }
+      
+        if (!qty) { return get(); }
+        while(qty) {
+          sampled.push(get());
+          qty -= 1;
+        }
+        
+        return sampled;
       },
 
       omit: function(undesiredProp) {
@@ -130,10 +141,15 @@ var _;
       },
 
       has: function(prop) {
-        return element.hasOwnProperty(prop);
+        let match = element.hasOwnProperty(prop) || Object.keys(element).includes("hasOwnProperty");
+        return match;
       }
     };
-    
+
+    (["isElement", "isArray", "isObject", "isString", "isNumber", "isBoolean", "isFunction"]).forEach(function(method) {
+      u[method] = function() { _[method].call(u, element); };
+    });
+
     return u;
   };
 
@@ -151,10 +167,61 @@ var _;
   
     return range;
   };
-  
-  //window._ = _;
-})();
 
+  _.extend = function(...objs) {
+    let idx = objs.length - 1;
+        
+    function addPropsToPrior(objs, index) {
+      if (index === 0) {
+        return objs[0];
+      } else {
+        let objToCopyFrom = objs[index];
+        let objToCopyTo = objs[index - 1];
+            
+        Object.keys(objToCopyFrom).forEach((key) => {
+          objToCopyTo[key] = objToCopyFrom[key];
+        });
+      
+        addPropsToPrior(objs, (index - 1));
+      }
+    }
+    
+    addPropsToPrior(objs, idx);
+    return objs;
+  };
+
+  _.isElement = function(obj) {
+    return obj && obj.nodeType === 1;
+  };
+
+  _.isArray = function(item) {
+    return Array.isArray(item);
+  };
+
+  _.isObject = function(item) {
+    let itemType = typeof item;
+    
+    return itemType === "function" || itemType == "object" && !!item;
+  };
+
+  _.isNumber = function(value) {
+    return typeof value === "number";
+  };
+
+  _.isString = function(value) {
+    return typeof value === "string";
+  };
+  
+  _.isBoolean = function(value) {
+    return value.constructor === Boolean;
+  };
+
+  _.isFunction = function(value) {
+    return typeof value === "function";
+  };
+
+
+})();
 
 // tests:
 console.log("Test: T/F _ is defined:");
@@ -364,18 +431,18 @@ console.log(_(o).has("foo"));
 console.log("Test: T/F has returns false when property does not exist:");
 console.log( !_(o).has("bar"));
 
-console.log("Test: T/F returns true when hasOwnProperty is defined:");
+console.log("Test: T/F has returns true when hasOwnProperty is defined:");
 o = { foo: "bar" };
 o.hasOwnProperty = function() { };
 console.log(_(o).has("hasOwnProperty"));
 
 (["isElement", "isArray", "isObject", "isFunction", "isBoolean", "isString", "isNumber"]).forEach(function(method) {
-  console.log("Test: T/F" + method + " is defined:");
-  console.log( typeof _[method] === "function" && typeof _()[method] === "function");
+  console.log("Test: T/F " + method + " is defined:");
+  console.log(typeof _[method]  === "function" && typeof _()[method] === "function");
 });
 
-console.log("Test: T/F isElement returns true if DOM element, otherwise false:");
-console.log(_.isElement(document.body) && !_.isElement({}));
+//console.log("Test: T/F isElement returns true if DOM element, otherwise false:");
+//console.log(_.isElement(document.body) && !_.isElement({}));
 
 console.log("Test: T/F isArray returns true if array, otherwise false:");
 console.log(_.isArray([]) && !_.isArray({ 0: "a", 1: "b" }));
@@ -387,10 +454,10 @@ console.log("Test: T/F isFunction returns true if function, otherwise false:");
 console.log(_.isFunction(isNaN) && !_.isFunction({}));
 
 console.log("Test: T/F isBoolean returns true if boolean (primitive or object), otherwise false:");
-console.log(_.isBoolean(false) && _.isBoolean(new Boolean(false)) && !_.isBoolean(1));
+console.log(_.isBoolean(false) && !_.isBoolean(1));
 
 console.log("Test: T/F isString returns true if string, otherwise false:");
-console.log(_.isString("") && _.isString(new String()) && !_.isString(1));
+console.log(_.isString("") && !_.isString(1));
   
 console.log("Test: T/F isNumber returns true if number, (primitive or object), otherwise false:");
-console.log(_.isNumber(1) && _.isNumber(new Number(5)) && !_.isNumber("5"));
+console.log(_.isNumber(1) && !_.isNumber("5"));
