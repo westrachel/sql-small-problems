@@ -187,7 +187,7 @@ var _;
     }
     
     addPropsToPrior(objs, idx);
-    return objs;
+    return objs[0];
   };
 
   _.isElement = function(obj) {
