@@ -154,3 +154,115 @@ sub.addEventListener('contextmenu', event => {
   event.stopPropagation();
   alert('Sub');
 });
+
+// 6) implement JS that:
+// i. When the user clicks on a navigation link (Articles 1-4), the 
+//   browser scrolls to that article in the <main> element and adds
+//   the highlight class to it. If another element already has the highlight class,
+//   the browser removes the class from that element.
+// ii. When the user clicks on an article element or any of its child elements,
+//    the browser adds the highlight class to it. If another element already has
+//    the highlight class, the browser removes the class from that element.
+// iii. When the user clicks anywhere else on the page, the browser adds the
+// highlight class to the main element. If another element already has the highlight
+//    class, the browser removes the class from that element.
+
+document.addEventListener('click', event => {
+  removeExistingHighlight();
+  
+  let elToHighlight;
+  let elClicked = event.target;
+  let tag = elClicked.tagName;
+  console.log('element' + elClicked);
+  console.log('id' + elClicked.id);
+  
+  if (tag === 'A') {
+    let id = elClicked.href.match('#article-[0-9]+')[0];
+    let article = document.querySelector(id);
+    elToHighlight = article;
+  } else if (tag === 'ARTICLE') {
+    elToHighlight = elClicked;
+  } else if (elClicked.parentNode.tagName === 'ARTICLE') {
+    elToHighlight = elClicked.parentNode;
+  } else {
+    elToHighlight = document.querySelector('main');
+  }
+
+  addHighlight(elToHighlight);
+});
+
+function addHighlight(element) {
+  element.classList.add('highlight');
+}
+
+function removeExistingHighlight() {
+  let removals = document.getElementsByClassName('highlight');
+  
+  Array.prototype.slice.call(removals).forEach(el => {
+    el.classList.remove('highlight');
+  });
+}
+
+// 7) implement delegateEvent function that:
+// > accepts 4 arguments: parentElement, selector (to find inner elements of the parent),
+//     the eventType (for the listener), and the callback 
+// > returns a boolean - 
+//    > true if it could added the event listener undefined otherwise
+
+// given html:
+//<!doctype html>
+//<html lang="en-US">
+//  <head>
+//    <meta charset="utf-8">
+//    <title>Event Delegation Function</title>
+//  </head>
+//  <body>
+//    <main>
+//      <section>
+//        <h1>Header</h1>
+//        <p>Content</p>
+//      </section>
+//      <aside>
+//        <h2>Sub Side Notes</h2>
+//        <p>Note 1</p>
+//        <p>Note 2</p>
+//      </aside>
+//    </main>
+//    <nav>
+//      <p>Side Note</p>
+//    </nav>
+//  </body>
+//</html>
+
+// sample elements + callback for testing:
+const element1 = document.querySelector('table');
+const element2 = document.querySelector('main');
+
+const callback = ({target, currentTarget}) => {
+  alert(`Target: ${target.tagName}\nCurrent Target: ${currentTarget.tagName}`);
+};
+
+function delegateEvent(parent, selector, eventType, cb) {
+  if (parent && parent instanceof Element) {
+    return !parent.addEventListener(eventType, event => {
+      let kids = parent.querySelectorAll(selector);
+      let targets = Array.prototype.slice.call(kids);
+      if (targets.includes(event.target)) {
+        cb(event);
+      }
+    });
+  }
+}
+
+// test cases:
+delegateEvent(element1, 'p', 'click', callback); // undefined
+delegateEvent(element2, 'h1', 'click', callback); // true
+// <=> click event listener is added to element3, and if click the
+// h1 element that contains the text "Header" the callback function
+// should trigger and display an alert message, but if anywhere else is
+//  clicked, the callback function doesn't trigger
+delegateEvent(element2, 'aside p', 'click', callback); // true
+// <=> adds click event listener to element3
+// if click p element that's descendent of aside w/in <main>
+// cb function should send alert, whereas if click anywhere else
+// the cb function shouldn't be triggered
