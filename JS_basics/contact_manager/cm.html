@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html class="no-js">
+  <head>
+    <meta charset="utf-8">
+    <title>Contact Manager</title>
+    <link rel="stylesheet" href="cm.css">
+    <script type="text/javascript" charset="utf-8" src="cm.js"></script>
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <h1>Contact Manager</h1>
+      </div>
+    </header>
+    <div class="container">
+      <div class="col-xs-12 main-container">
+        <div class="text-center col-sm-6">
+          <a href="#contacts/new" class="btn btn-lg btn-outline">Add Contact</a>
+        </div>
+        <div class="text-center col-sm-6">
+          <input type="text" placeholder="Search">
+        </div>
+        <form id="contact-form-info" class="hide" action="#" method="post">
+          <fieldset>
+            <input type="text" id="fullname" name="fullname" required>
+            <input type="text" id="email" name="email" pattern="/[a-z]{1,}@[a-z]{1,}\.[a-z]{2,}/i" required>
+            <input type="text" id="phone_number" name="phone_number" pattern="/[0-9]{3}-[0-9]{3}-[0-9]{4}/" required>
+            <input type="submit" value="Submit">
+          </fieldset>
+        </form>
+        <ul class="contacts-container"></ul>
+        <div class="empty-contacts">
+          <h3>There are no contacts.</h3>
+          <a href="#contacts/new" class="btn btn-lg btn-outline">Add Contact</a>
+        </div>
+        <div class="empty-search-contacts hide">
+          <h3>"There are no contacts starting with "
+          <strong></strong>
+          </h3>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

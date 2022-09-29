@@ -266,3 +266,96 @@ delegateEvent(element2, 'aside p', 'click', callback); // true
 // if click p element that's descendent of aside w/in <main>
 // cb function should send alert, whereas if click anywhere else
 // the cb function shouldn't be triggered
+
+
+// 8) given id of element, create nested array that outlines
+// all the elements and their siblings in separate subarrays
+<html>
+
+<head>
+  <title>Tracing the DOM Tree</title>
+</head>
+
+<body>
+  <article id="1">1
+    <header id="2">2
+      <span id="3">3
+        <a href="#" id="4">4</a>
+      </span>
+    </header>
+    <main id="5">5
+      <section id="6">6
+        <p id="7">7
+          <span id="8">8
+            <strong id="9">9
+              <a href="#" id="10">10</a>
+            </strong>
+          </span>
+        </p>
+      </section>
+      <section id="11">11
+        <p id="12">12
+          <span id="13">13
+            <strong id="14">14
+              <a href="#" id="15">15</a>
+            </strong>
+          </span>
+        </p>
+        <p id="16">16
+          <span id="17">17
+            <strong id="18">18
+              <a href="#" id="19">19</a>
+            </strong>
+          </span>
+          <span id="20">20
+            <strong id="21">21
+              <a href="#" id="22">22</a>
+            </strong>
+          </span>
+        </p>
+      </section>
+    </main>
+    <footer id="23">23
+      <p id="24">24</p>
+    </footer>
+  </article>
+</body>
+</html>
+
+function domTreeTracer(id) {
+  let tree = [];
+  let currEl = document.getElementById(id);
+  tree.push(findSibs(currEl));
+  currEl = currEl.parentNode;
+  
+  while (currEl.tagName !== 'BODY') {
+    tree.push(findSibs(currEl));
+    currEl = currEl.parentNode;
+  }
+  
+  return tree;
+}
+
+function findSibs(el) {
+  let currElId = el.id;
+  let parent = el.parentNode;
+  let sibsArr = [el.tagName];
+  let sibs = parent.children;
+  
+  if (sibs && parent.tagName !== 'BODY') {
+    Array.prototype.slice.call(sibs).forEach(el => {
+      if (el.id !== currElId) {
+        sibsArr.push(el.tagName);
+      }
+    });
+  }
+  
+  return sibsArr;
+}
+
+// test cases:
+domTreeTracer(1);   // [["ARTICLE"]]
+domTreeTracer(2);   // [["HEADER", "MAIN", "FOOTER"], ["ARTICLE"]]
+domTreeTracer(22);  // [["A"], ["STRONG"], ["SPAN", "SPAN"], ["P", "P"], 
+            //          ["SECTION", "SECTION"], ["HEADER", "MAIN", "FOOTER"], ["ARTICLE"]]
+

@@ -1,0 +1,27 @@
+Feature 1: when click on add contact button a form appears that contains:
+    > inputs for full name, email, & phone #
+    > submit button
+    > cancel button
+
+Input Requirements:
+example: tested submitting x for fullname, x for phone #, and x for email
+ > for emails need to check if there is an '@' in the email and that there is
+     >= 1 character after the @ followed by a period & >= 2 more characters
+    examples: x       // invalid email
+              x@yco   // invalid email
+              x@y.co  // valid email
+              x@y.c   // invalid email
+    <> assuming case insensitive for characters
+      <=> regex pattern: /[a-z]{1,}@[a-z]{1,}\.[a-z]{2,}/i
+      
+ > phone number doesn't have validation (base version allows for
+    inputting 'x') - will assume american numbers and add validation
+    that checks for ###-###-#### format where # = number 0-9
+ > fullname can't be empty or consist of only spaces
+
+Implementation:
+ i. find all button(s) with the class btn btn-lg btn-outline
+    <> one button will be hidden if there is >= 1 contact entered
+ ii. add click event listener to the found buttons
+ iii. upon clicking remove the hide class from the form that allows
+     the user to submit a fullname, email, and phone #
