@@ -4,6 +4,11 @@
     <meta charset="utf-8">
     <title>Contact Manager</title>
     <link rel="stylesheet" href="cm.css">
+    <style>
+      .hide {
+        display: none;
+      }
+    </style>
     <script type="text/javascript" charset="utf-8" src="cm.js"></script>
   </head>
   <body>
@@ -18,14 +23,22 @@
           <a href="#contacts/new" class="btn btn-lg btn-outline">Add Contact</a>
         </div>
         <div class="text-center col-sm-6">
-          <input type="text" placeholder="Search">
+          <input type="text" class="search" placeholder="Search">
         </div>
         <form id="contact-form-info" class="hide" action="#" method="post">
           <fieldset>
             <input type="text" id="fullname" name="fullname" required>
             <input type="text" id="email" name="email" pattern="/[a-z]{1,}@[a-z]{1,}\.[a-z]{2,}/i" required>
             <input type="text" id="phone_number" name="phone_number" pattern="/[0-9]{3}-[0-9]{3}-[0-9]{4}/" required>
+            <label for="cars">Select a tag:</label>
+              <select id="tag" name="tag">
+                <option value="sales">Sales</option>
+                <option value="marketing">Marketing</option>
+                <option value="engineering">Engineering</option>
+                <option value="human-resources">Human Resources</option>
+              </select> 
             <input type="submit" value="Submit">
+            <button type="button">Cancel</button>
           </fieldset>
         </form>
         <ul class="contacts-container"></ul>

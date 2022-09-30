@@ -2,6 +2,8 @@ Feature 1: when click on add contact button a form appears that contains:
     > inputs for full name, email, & phone #
     > submit button
     > cancel button
+    > also, want to add dropdown option to the form that allows user to
+      select a tag
 
 Input Requirements:
 example: tested submitting x for fullname, x for phone #, and x for email
@@ -17,11 +19,21 @@ example: tested submitting x for fullname, x for phone #, and x for email
  > phone number doesn't have validation (base version allows for
     inputting 'x') - will assume american numbers and add validation
     that checks for ###-###-#### format where # = number 0-9
+    <=> regex pattern: /[0-9]{3}-[0-9]{3}-[0-9]{4}/
  > fullname can't be empty or consist of only spaces
 
 Implementation:
- i. find all button(s) with the class btn btn-lg btn-outline
-    <> one button will be hidden if there is >= 1 contact entered
- ii. add click event listener to the found buttons
- iii. upon clicking remove the hide class from the form that allows
-     the user to submit a fullname, email, and phone #
+ i. find all buttons with the class btn btn-lg btn-outline
+ ii. iterate over the found buttons and search field and add a click event listener
+    to each of them
+    > if have a lot of click event listeners, will consider implementing
+     event delegation, but for now features are minimal, so okay to add event
+     listener to each
+ iii. upon clicking the buttons/search field:
+    > remove the hide class from the form that allows the user to submit
+      a fullname, email, phone #, and select a tag
+    > hide the add contact buttons and search button
+ iv. add event listener to button in the form that allows user to Cancel
+    > by cancelling, the form should be rehidden and the add contact button(s),
+    and search button should reappear
+    > only 1 contact button should reappear if contacts have already been added
