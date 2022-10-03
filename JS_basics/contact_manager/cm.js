@@ -1,53 +1,68 @@
 document.addEventListener('DOMContentLoaded', () => {
+  const contactManager = (() => {
+  
+    let contactId = 0;
+    function generateContactId() {
+      return contactId += 1;
+    }
+  
+    return {
+      arrify: function(collection) {
+        return Array.prototype.slice.call(collection);
+      },
+  
+      toggleDisplay: function(element) {
+        element.classList.toggle('hide');
+      },
+
+      init: function() {
+        this.addBtns = this.arrify(document.getElementsByClassName('add-contacts'));
+        this.addForm = document.querySelector('#add-contact-form');
+        this.search = document.querySelector('.search');
+        this.cancelBtns = this.arrify(document.querySelectorAll('.cancel-button'));
+        this.emptyContacts = document.querySelector('.empty-contacts');
+        this.contactsTemplate = Handlebars.compile(document.querySelector("#contactsTemplate").innerHTML);
+        this.allContacts = [];
+        this.bindEvents();
+      },
+    
+      createContact: function(form) {
+        const contact = { id: generateContactId() };
+        const VALID_IDS = ["fullname", "email", "phone_number", "tag"];
+
+        console.log(this.arrify(form));
+        this.arrify(form).forEach(element => {
+          if (VALID_IDS.includes(element.id)) {
+            contact[element.name] = element.value;
+          }
+        });
+        return contact;
+      },
+  
+      bindEvents: function() {
+        let self = this;
+        let btns = self.addBtns.concat(self.cancelBtns);
+        let addSearchEls = self.addBtns.concat([self.addForm, self.search, self.emptyContacts]);
+
+        btns.forEach(element => {
+          element.addEventListener('click', event => {
+            event.preventDefault();
+            addSearchEls.forEach(self.toggleDisplay);
+          });
+        });
+
+        self.addForm.addEventListener('submit', event => {
+          event.preventDefault();
+          self.allContacts.push(self.createContact(self.addForm));
+          [self.addBtns[0], self.search, self.addForm].forEach(self.toggleDisplay);
+          
+          let htmlData = self.contactsTemplate({ contacts: self.allContacts});
+          debugger;
+          document.querySelector('.all-contacts').innerHTML += htmlData;
+        });
+      }
+    };
+  })();
+
   contactManager.init();
 });
-
-const contactManager = {
-  arrify: function(collection) {
-    return Array.prototype.slice.call(collection);
-  },
-
-  setDisplayStatus: function(...statusAndEls) {
-    const display = statusAndEls[0];
-    const els = statusAndEls.slice(1);
-  
-    els.forEach(element => {
-      if (display === 'hide') {
-        element.classList.add('hide');
-      } else {
-        element.classList.remove('hide');
-      }
-    });
-  },
-
-  changeAddFormDisplay: function(showForm) {
-    const formStatus = showForm === 'unhide' ? 'unhide' : 'hide';
-    const addBtnsStatus = showForm === 'unhide' ? 'hide' : 'unhide';
-
-    this.setDisplayStatus(formStatus, this.addContactForm);
-    this.setDisplayStatus(addBtnsStatus, this.addContactBtns, this.searchField);
-  },
-
-  init: function() {
-    this.addContactBtns = this.arrify(document.getElementsByClassName('btn btn-lg btn-outline'));
-    this.addContactForm = document.querySelector('#contact-form-info');
-    this.searchField = document.querySelector('.search')
-    this.cancelBtn = document.querySelector('button');
-    this.bindEvents();
-  },
-  
-  bindEvents: function() {
-    let self = this;
-    self.addContactBtns.forEach(button => {
-      addEventListener('click', () => {
-        self.changeAddFormDisplay('unhide');
-      });
-    });
-    
-    self.cancelBtn.addEventListener('click', () => {
-      alert('hide form!');
-      self.changeAddFormDisplay('hide');
-    });
-  }
-
-};

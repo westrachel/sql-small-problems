@@ -4,12 +4,19 @@
     <meta charset="utf-8">
     <title>Contact Manager</title>
     <link rel="stylesheet" href="cm.css">
-    <style>
-      .hide {
-        display: none;
-      }
-    </style>
     <script type="text/javascript" charset="utf-8" src="cm.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+    <script id="contactsTemplate" type="text/x-handlebars-template">
+      {{#each contacts}}
+      <ul><strong>{{fullname}}</strong>
+        <li><strong>Phone Number:</strong>{{phone_number}}</li>
+        <li><strong>Email:</strong>{{email}}</li>
+        <li><strong>Tag:</strong>{{tag}}</li>
+        <li><a href="/#contacts/edit/{{id}}">Edit</a></li>
+        <li><a href="/#contacts/delete/{{id}}">Delete</a></li>
+      {{/each}}
+      </ul>
+    </script>
   </head>
   <body>
     <header>
@@ -19,32 +26,51 @@
     </header>
     <div class="container">
       <div class="col-xs-12 main-container">
-        <div class="text-center col-sm-6">
-          <a href="#contacts/new" class="btn btn-lg btn-outline">Add Contact</a>
-        </div>
-        <div class="text-center col-sm-6">
+        <div>
+          <a href="#contacts/new" class="add-contacts">Add Contact</a>
           <input type="text" class="search" placeholder="Search">
         </div>
-        <form id="contact-form-info" class="hide" action="#" method="post">
+        <form id="add-contact-form" class="hide" action="#" method="post">
+          <h2>Create Contact</h2>
           <fieldset>
-            <input type="text" id="fullname" name="fullname" required>
-            <input type="text" id="email" name="email" pattern="/[a-z]{1,}@[a-z]{1,}\.[a-z]{2,}/i" required>
-            <input type="text" id="phone_number" name="phone_number" pattern="/[0-9]{3}-[0-9]{3}-[0-9]{4}/" required>
+            Full name:<input type="text" id="fullname" name="fullname" pattern="[A-Za-z]{1,}" required>
+            Email address:<input type="text" id="email" name="email" pattern="[A-Za-z]{1,}@[A-Za-z]{1,}\.[A-Za-z]{2,}" required>
+            Phone Number:<input type="text" id="phone_number" name="phone_number" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" required>
+            <label for="tag">Select a tag:</label>
+              <select id="tag" name="tag">
+                <option value="sales">Sales</option>
+                <option value="marketing">Marketing</option>
+                <option value="engineering">Engineering</option>
+                <option value="human-resources">Human Resources</option>
+              </select>
+            <button type="submit">Submit</button>
+            <button type="button" class="cancel-button">Cancel</button>
+          </fieldset>
+        </form>
+        <form id="edit-contact-form" class="hide" action="#" method="post">
+          <h2>Edit Contact</h2>
+          <fieldset>
+            Full name:<input type="text" id="fullname" name="fullname" pattern="[A-Za-z]{1,}" required>
+            Email address:<input type="text" id="email" name="email" pattern="[A-Za-z]{1,}@[A-Za-z]{1,}\.[A-Za-z]{2,}" required>
+            Phone Number:<input type="text" id="phone_number" name="phone_number" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" required>
             <label for="cars">Select a tag:</label>
               <select id="tag" name="tag">
                 <option value="sales">Sales</option>
                 <option value="marketing">Marketing</option>
                 <option value="engineering">Engineering</option>
                 <option value="human-resources">Human Resources</option>
-              </select> 
-            <input type="submit" value="Submit">
-            <button type="button">Cancel</button>
+              </select>
+            <button type="submit">Submit</button>
+            <button type="button" class="cancel-button">Cancel</button>
           </fieldset>
         </form>
-        <ul class="contacts-container"></ul>
-        <div class="empty-contacts">
-          <h3>There are no contacts.</h3>
-          <a href="#contacts/new" class="btn btn-lg btn-outline">Add Contact</a>
+        <div class="contacts-container">
+          <div class="empty-contacts">
+            <h3>There are no contacts.</h3>
+            <a href="#contacts/new" class="add-contacts">Add Contact</a>
+          </div>
+          <div class="all-contacts">
+          </div>
         </div>
         <div class="empty-search-contacts hide">
           <h3>"There are no contacts starting with "

@@ -21,19 +21,53 @@ example: tested submitting x for fullname, x for phone #, and x for email
     that checks for ###-###-#### format where # = number 0-9
     <=> regex pattern: /[0-9]{3}-[0-9]{3}-[0-9]{4}/
  > fullname can't be empty or consist of only spaces
+   regex: [A-Za-z]{1,}  <=> requiring at least one alphabetical character
+ > can implement all the above regex via the pattern attribute of the html
+   form; when use pattern attribute, don't use start/end '/' in the patterns above
+ > base requirements for validation to allow user to submit the same exact contact
+   info more than once
 
 Implementation:
- i. find all buttons with the class btn btn-lg btn-outline
- ii. iterate over the found buttons and search field and add a click event listener
+ i. find all buttons associated with adding contact info or cancelling out of 
+  add + edit contact info forms
+ ii. iterate over the add and cancel buttons and add a click event listener
     to each of them
     > if have a lot of click event listeners, will consider implementing
      event delegation, but for now features are minimal, so okay to add event
      listener to each
- iii. upon clicking the buttons/search field:
-    > remove the hide class from the form that allows the user to submit
-      a fullname, email, phone #, and select a tag
-    > hide the add contact buttons and search button
- iv. add event listener to button in the form that allows user to Cancel
-    > by cancelling, the form should be rehidden and the add contact button(s),
-    and search button should reappear
-    > only 1 contact button should reappear if contacts have already been added
+ iii. upon clicking any one of the buttons, toggle the hide class from the buttons,
+  the search field, and the add contact info form
+    > instead of using add/remove, can toggle each element's current classList to
+     either add the hide class if it's not present already or remove the hide class
+     if it is present
+
+Feature 2: when click submit form and don't get an alert about an incorrect requirement
+from one of the html form inputs:
+ i. create a unique id for the contact info
+ i. add the user's submitted contact info + unique id into an object that gets pushed
+  to an array of all contacts (will refactor later to send data to server)
+ iii. integrate a handlebars template into the html
+     > use the each helper to iterate over all the contact info objects in the array
+     > format into html the object's contact info (don't show the id in the html though)
+ iv. unhide the first add contact button and search field and hide the add contact info form
+ v. instead of displaying the second add contact button and text that states there are no
+   contacts, show the contact info submitted
+
+
+Implementation:
+ i. add event listener to the addForm button that gets fired when the form is submitted
+ ii. prevent default behavior, because don't want the page to reload upon submission
+ iii. parse the form data as json
+ iv. add a unique id property to the object to keep track of the specific contact's info
+   > edit the approach to creating the contactManager object; return it from an immediately
+    invoked function
+   > within the private scope created by the immediately invoked function, create a generate id
+    function that will be accessible to the contactManager's method property that creates
+    new contact info objects
+ iv. push the contact info object into an array property that stores all contact info
+ v. create + compile handlebars template that will iterate through the array of contact objects
+  and render each in the html
+   > in the template keep track of each object's id via integrating it into the anchor element's
+    href attribute
+ vi. hide the add form and uhide the first add contact button and search field
+ vi. use the function returned from Handlebars.compile to add all contact info into the html
