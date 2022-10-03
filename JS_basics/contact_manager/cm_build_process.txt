@@ -71,3 +71,42 @@ Implementation:
     href attribute
  vi. hide the add form and uhide the first add contact button and search field
  vi. use the function returned from Handlebars.compile to add all contact info into the html
+
+Feature 3: when click on delete link associated with a particular contact, delete all associated
+contact info (name, email, phone, & tag)
+
+Implementation:
+ i. Add click event listener to the div that contains all ul elements of contacts that exist
+ ii. Check if the click event's target is an anchor element
+ iii. If it's an anchor element, check if the href includes delete
+ iv. if it's found that the target, the first element to receive notification of the event, was
+  the delete anchor element send confirm to user to ensure that they do want to delete the contact
+  info
+ v. if the user confirms, then find the contact's id # in the href attribute
+ vi. delete the contact object from the allContacts array that has an id property equal to
+  the id # of the anchor element that the user clicked on
+ vii. delete the closest ul element, as that will delete all html elements that have textContent
+  that includes data associated with the contact info that's trying to be deleted
+ viii. check if allContacts array has a length of zero; if it does, then unhide the second add contact
+  button and text that states that there are no contacts
+
+Feature 4: when click on edit link associated with a particular contact, add edit form that contains
+the contact's current info for the name, email, phone & tag properties
+
+Implementation:
+ i. Edit the click event listener that was added to the div that contains all ul elements of
+  contacts that exist; specifically, update the conditional that checks if the anchor element's
+  href includes edit 
+ ii. if edit is included, then find the contact's id # in the href attribute
+ iii. select from the allContacts array the object that has an id property equal to
+  the id # of the anchor element that the user clicked on
+ iv. toggle the hide class on the add button and the search field so that those are hidden
+ v. insert an edit html form element into the html using handlebars template
+   > fill in handelbars template so that the contact info object's properties are input
+    into the placeholder attributes of the edit html form's input child elements
+ vi. if the user submits an edit successfull then find the corresponding contact object in the
+    allContacts array and edit its properties to match all the values in the form that was
+    successfully just submitted
+ vii. if the user clicks cancel, then first add contact button and search form should appear
+  and there is at least one confirmed contact in the data, so the 2nd add contact button should be
+  hidden
