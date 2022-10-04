@@ -100,11 +100,13 @@ Implementation:
  ii. if edit is included, then find the contact's id # in the href attribute
  iii. select from the allContacts array the object that has an id property equal to
   the id # of the anchor element that the user clicked on
- iv. toggle the hide class on the add button and the search field so that those are hidden
- v. insert an edit html form element into the html using handlebars template
-   > fill in handelbars template so that the contact info object's properties are input
-    into the placeholder attributes of the edit html form's input child elements
- vi. if the user submits an edit successfull then find the corresponding contact object in the
+ iv. hide elements of the main display
+ v. iterate through the editForm object's name, tag, email, and phone number properties and
+  update them to reflect the properties of the contact object that the user clicked on
+ vi. insert an edit html form element into the html using handlebars template
+   > pass into handlebars template function the editForm object that has been updated to reflect
+    the contact info of the contact that the user clicked on
+ vi. if the user submits an edit successfully then find the corresponding contact object in the
     allContacts array and edit its properties to match all the values in the form that was
     successfully just submitted
  vii. if the user clicks cancel, then first add contact button and search form should appear
