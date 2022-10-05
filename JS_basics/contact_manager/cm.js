@@ -59,19 +59,23 @@ document.addEventListener('DOMContentLoaded', () => {
         this.emptyContacts = document.querySelector('.empty-contacts');
         
         
-        this.divOfContacts = document.querySelector('.all-contacts');
+        this.contactsDiv = document.querySelector('.all-contacts');
         this.allContacts = [];
         this.bindEvents();
       },
     
       createContact: function(form) {
         const contact = { id: generateContactId() };
-
+        return this.editContact(contact, form);
+      },
+      
+      editContact: function(contact, form) {
         this.arrify(form).forEach(element => {
           if (VALID_IDS.includes(element.id)) {
             contact[element.name] = element.value;
           }
         });
+        
         return contact;
       },
 
@@ -92,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const target = event.target;
 
           if (target.className.match('add-contact')) {
-            self.showHide([self.addSearchHeader, self.emptyContacts, self.divOfContacts], 
+            self.showHide([self.addSearchHeader, self.emptyContacts, self.contactsDiv], 
                           [self.addForm]);
 
           } else if (target.nodeName === 'A') {
@@ -107,12 +111,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 target.parentNode.parentNode.remove();
                 
                 if (self.allContacts.length === 0) {
-                  self.showHide([self.forms], [self.emptyContacts]);
+                  self.showHide([self.forms()], [self.emptyContacts]);
                 }
               }
             } else if (editMatch) {
+              self.showHide([self.addSearchHeader, self.contactsDiv],
+                            []);
               const id = Number(self.anchorContactId(editMatch, target.href));
-              const contact = self.allContacts.filter(contact => contact.id === id);
+              const contact = self.allContacts.filter(contact => contact.id === id)[0];
               
               const selectedTags = Object.keys(editForm).filter(key => {
                 key.match('(sales|marketing|engineering|hr)');
@@ -127,21 +133,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
               });
               
-              Object.keys(editForm).forEach(l => console.log(editForm[l]));
+              editForm["idValue"] = `value='${id}'`;
               self.addHTMLForm(editForm);
-              self.showHide([self.addSearchHeader, self.divOfContacts],
-                            [document.querySelector('#edit-contact-form')]);
+              self.showHide([], [document.querySelector('#edit-contact-form')]);
             }
           } else if (target.innerHTML.match('Submit')) {
+            if (target.form.id === 'add-contact-form') {
               self.allContacts.push(self.createContact(self.addForm));
-              self.showHide([self.addForm], [self.addSearchHeader, self.divOfContacts]);
+              self.showHide([self.addForm], []);
           
               let htmlData = TEMPLATES.contacts({ contacts: self.allContacts });
-              self.divOfContacts.innerHTML += htmlData;
+              self.contactsDiv.innerHTML += htmlData;
+            } else {
+              const id = document.querySelectorAll("input[name='contactId']")[1].value;
+              self.allContacts.forEach((contact, idx, arr) => {
+                if (String(contact.id) === id) {
+                  arr[idx] = self.editContact(contact, target.form);
+                }
+              });
+              
+              target.form.remove();
+            }
+            
+            self.showHide([], [self.contactsDiv, self.addSearchHeader]);
           } else if (target.innerHTML.match('Cancel')) {
-            const unHideEls = [self.addSearchHeader, self.divOfContacts];
+            const unHideEls = [self.addSearchHeader, self.contactsDiv];
             if (self.allContacts.length === 0) { unHideEls.push(self.emptyContacts); }
-            self.showHide(self.forms, unHideEls);
+            self.showHide(self.forms(), unHideEls);
           }
           
         });

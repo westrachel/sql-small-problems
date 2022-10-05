@@ -21,9 +21,9 @@
       <form id={{id}} class="hide" action="#" method="post">
           <h2>{{title}}</h2>
           <fieldset>
-            Full name:<input type="text" id="fullname" name="fullname" pattern="[A-Za-z]{1,}" {{fullname}} required>
-            Email address:<input type="text" id="email" name="email" pattern="[A-Za-z]{1,}@[A-Za-z]{1,}\.[A-Za-z]{2,}" {{email}} required>
-            Phone Number:<input type="text" id="phone_number" name="phone_number" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" {{phone_number}} required>
+            Full name:<input type="text" id="fullname" name="fullname" pattern="[A-Za-z]{1,}" {{{fullname}}} required>
+            Email address:<input type="text" id="email" name="email" pattern="[A-Za-z]{1,}@[A-Za-z]{1,}\.[A-Za-z]{2,}" {{{email}}} required>
+            Phone Number:<input type="text" id="phone_number" name="phone_number" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" {{{phone_number}}} required>
             <label for="tag">Select a tag:</label>
               <select id="tag" name="tag">
                 <option value="sales" {{sales}}>Sales</option>
@@ -31,6 +31,7 @@
                 <option value="engineering" {{engineering}}>Engineering</option>
                 <option value="human-resources" {{hr}}>Human Resources</option>
               </select>
+            <input type="hidden" id="contactId" name="contactId" {{{idValue}}}>
             <button type="submit">Submit</button>
             <button type="button">Cancel</button>
           </fieldset>
