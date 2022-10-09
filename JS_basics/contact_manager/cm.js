@@ -5,12 +5,11 @@ document.addEventListener('DOMContentLoaded', () => {
       return document.querySelector(selector);
     }
     
-    const DOM = {
-      addForm: find('#add-contact-form'),
-      search: find('.search'),
-      addSearchHeader: find('.add-search-container'),
-      noContacts: find('.empty-contacts'),
-      contactsDiv: find('.all-contacts')
+    const SELECTORS = {
+      search: '.search',
+      addSearch: '.add-search-container',
+      noContacts: '.empty-contacts',
+      contactsDiv: '.all-contacts'
     };
     
     const DANGER_CHARS_ENCODING = {
@@ -61,16 +60,17 @@ document.addEventListener('DOMContentLoaded', () => {
         return Array.prototype.slice.call(collection);
       },
   
-      addClass: function(...classElements) {
-        const cssClass = classElements[0];
-        classElements.slice(1).forEach(el => {
-          el.classList.add(cssClass);
+      addClass: function(...classSelectors) {
+        const cssClass = classSelectors[0];
+        classSelectors.slice(1).forEach(selector => {
+          find(selector).classList.add(cssClass);
         });
       },
       
-      removeClass: function(...classElements) {
-        const cssClass = classElements[0];
-        classElements.slice(1).forEach(el => {
+      removeClass: function(...classSelectors) {
+        const cssClass = classSelectors[0];
+        classSelectors.slice(1).forEach(selector => {
+          const el = find(selector);
           if (el.classList.contains(cssClass)) {
             el.classList.remove(cssClass);
           }
@@ -85,16 +85,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
       init: function() {
         this.addHTMLForm(addContactProps);
+        SELECTORS.addForm = '#add-contact-form';
         this.allContacts = [];
         this.bindEvents();
       },
     
       createContact: function(form) {
         const contact = { id: generateContactId() };
-        return this.editContact(contact, form, this);
+        return this.editContactObject(contact, form);
       },
       
-      editContact: function(contact, form, self) {
+      editContactObject: function(contact, form) {
+        const self = this;
         self.arrify(form).forEach(element => {
           if (VALID_IDS.includes(element.id)) {
             contact[element.name] = self.encodeDangerChars(element.value);
@@ -102,6 +104,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         return contact;
+      },
+      
+      editContacts: function(target) {
+        const id = document.querySelectorAll("input[name='contactId']")[1].value;
+        this.allContacts.forEach((contact, idx, arr) => {
+          if (String(contact.id) === id) {
+            arr[idx] = this.editContactObject(contact, target.form);
+          }
+        });
+            
+        target.form.remove();
       },
       
       encodeDangerChars: function(string) {
@@ -137,101 +150,119 @@ document.addEventListener('DOMContentLoaded', () => {
         }).join();
       },
 
-      forms: function() {
-        return this.arrify(document.querySelectorAll('form'));
+      formIds: function() {
+        return this.arrify(document.querySelectorAll('form')).map(el => '#' + el.id);
       },
       
-      addContactsHTML: function(context) {
-        this.contactsDiv().remove();
-        let htmlData = TEMPLATES.contacts({ contacts: context.allContacts });
+      addContactsHTML: function() {
+        const self = this;
+        find(SELECTORS.contactsDiv).remove();
+        let htmlData = TEMPLATES.contacts({ contacts: self.allContacts });
         let contactsContainer = find('.contacts-container');
         contactsContainer.innerHTML += htmlData;
+      },
+
+      deleteContact: function(deleteHref, target) {
+        const confirmed = confirm("Are you sure you want to delete this contact?");
+        if (confirmed) {
+          const id = Number(this.anchorContactId(deleteHref, target.href));
+          this.allContacts = this.allContacts.filter(contact => contact.id !== id);
+          target.parentNode.parentNode.remove();
+                
+          if (this.allContacts.length === 0) {
+            this.removeClass('hide', SELECTORS.noContacts);
+          }
+        }
+      },
+      
+      updateDisplayToCancel: function() {
+        const unHideEls = [SELECTORS.addSearch, SELECTORS.contactsDiv];
+        if (this.allContacts.length === 0) { 
+          unHideEls.push(SELECTORS.noContacts); 
+        }
+        const formForEditing = find('#' + editForm.id);
+        if (formForEditing) {
+          formForEditing.remove();
+        }
+        
+        this.addClass('hide', ...this.formIds());
+        this.removeClass('hide', ...unHideEls);
+      },
+      
+      displayAddForm: function() {
+        this.addClass('hide', SELECTORS.addSearch, SELECTORS.noContacts, SELECTORS.contactsDiv);
+        this.removeClass('hide', SELECTORS.addForm);
+      },
+      
+      displayEditForm: function(editHref, target) {
+        this.addClass('hide', SELECTORS.addSearch, SELECTORS.contactsDiv);
+        const id = Number(this.anchorContactId(editHref, target.href));
+        const contact = this.allContacts.filter(contact => contact.id === id)[0];
+              
+        const selectedTags = Object.keys(editForm).filter(key => {
+          key.match('(sales|marketing|engineering|hr)');
+        });
+        selectedTags.forEach(tag => editForm[tag] = '');
+
+        VALID_IDS.forEach(property => {
+          if (property !== 'tag') {
+            editForm[property] = "placeholder='" + contact[property] + "'";
+          } else {
+            editForm[contact[property]] = "selected";
+          }
+        });
+              
+        editForm["idValue"] = `value='${id}'`;
+        this.addHTMLForm(editForm);
+        this.removeClass('hide', '#edit-contact-form');
+      },
+      
+      submitForm: function(target) {
+        if (this.validContactInput(target.closest('form'))){
+          if (target.form.id === 'add-contact-form') {
+            this.allContacts.push(this.createContact(find(SELECTORS.addForm)));
+            this.addClass('hide', SELECTORS.addForm);
+          } else {
+            this.editContacts(target);
+          }
+            
+          this.addContactsHTML();
+          this.removeClass('hide', SELECTORS.addSearch);
+        }
+      },
+      
+      editOrDeleteContact: function(target) {
+        const deleteHref = target.href.match('delete/');
+        const editHref = target.href.match('edit/');
+            
+        if (deleteHref) { 
+          this.deleteContact(deleteHref, target);
+        } else if (editHref) {
+          this.displayEditForm(editHref, target);
+        }
+      },
+      
+      processClick: function(target) {
+        if (target.className.match('add-contact')) {
+          this.displayAddForm();
+
+        } else if (target.nodeName === 'A') {
+          this.editOrDeleteContact(target);
+              
+        } else if (target.innerHTML.match('Submit')) {
+          this.submitForm(target);
+            
+        } else if (target.innerHTML.match('Cancel')) {
+          this.updateDisplayToCancel();
+        }
       },
   
       bindEvents: function() {
         const self = this;
         document.addEventListener('click', event => {
           event.preventDefault();
-          const target = event.target;
-
-          if (target.className.match('add-contact')) {
-            self.addClass('hide', DOM.addSearchHeader, DOM.noContacts, DOM.contactsDiv);
-            self.removeClass('hide', DOM.addForm);
-
-          } else if (target.nodeName === 'A') {
-            const deleteMatch = target.href.match('delete/');
-            const editMatch = target.href.match('edit/');
-            
-            if (deleteMatch) {
-              const confirmed = confirm("Are you sure you want to delete this contact?");
-              if (confirmed) {
-                const id = Number(self.anchorContactId(deleteMatch, target.href));
-                self.allContacts = self.allContacts.filter(contact => contact.id !== id);
-                target.parentNode.parentNode.remove();
-                
-                debugger;
-                console.log(self.allContacts.length === 0);
-                if (self.allContacts.length === 0) {
-                  self.removeClass('hide', DOM.noContacts);
-                  //noContacts.classList.remove('hide');
-                }
-              }
-            } else if (editMatch) {
-              self.addClass('hide', DOM.addSearchHeader);
-              const id = Number(self.anchorContactId(editMatch, target.href));
-              const contact = self.allContacts.filter(contact => contact.id === id)[0];
-              
-              const selectedTags = Object.keys(editForm).filter(key => {
-                key.match('(sales|marketing|engineering|hr)');
-              });
-              selectedTags.forEach(tag => editForm[tag] = '');
-
-              VALID_IDS.forEach(property => {
-                if (property !== 'tag') {
-                  editForm[property] = "placeholder='" + contact[property] + "'";
-                } else {
-                  editForm[contact[property]] = "selected";
-                }
-              });
-              
-              editForm["idValue"] = `value='${id}'`;
-              self.addHTMLForm(editForm);
-              self.removeClass('hide', find('#edit-contact-form'));
-            }
-          } else if (target.innerHTML.match('Submit')) {
-            const form = target.closest("form");
-            if (self.validContactInput(form)){
-              if (target.form.id === 'add-contact-form') {
-                self.allContacts.push(self.createContact(DOM.addForm));
-                self.addClass('hide', DOM.addForm);
-          
-              } else {
-                const id = document.querySelectorAll("input[name='contactId']")[1].value;
-                self.allContacts.forEach((contact, idx, arr) => {
-                  if (String(contact.id) === id) {
-                    arr[idx] = self.editContact(contact, target.form, self);
-                  }
-                });
-            
-                target.form.remove();
-            }
-            
-              self.addContactsHTML(self);
-              self.removeClass('hide', DOM.addSearchHeader);
-            }
-            
-          } else if (target.innerHTML.match('Cancel')) {
-            const unHideEls = [DOM.addSearchHeader, DOM.contactsDiv];
-            if (self.allContacts.length === 0) { 
-              unHideEls.push(self.emptyContacts); 
-            }
-            self.addClass('hide', self.forms());
-            self.removeClass('hide', unHideEls);
-          }
-          
+          self.processClick(event.target);
         });
-        
-        
       }
     };
   })();
