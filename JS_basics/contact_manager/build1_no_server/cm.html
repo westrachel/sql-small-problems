@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title>Contact Manager</title>
-    <link rel="stylesheet" href="cm.css">
+    <link rel="stylesheet" href="cm.css"/>
     <script type="text/javascript" charset="utf-8" src="cm.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
     <script id="contacts-template" type="text/x-handlebars-template">
@@ -32,6 +32,9 @@
                 <option value="marketing" {{marketing}}>Marketing</option>
                 <option value="engineering" {{engineering}}>Engineering</option>
                 <option value="human-resources" {{hr}}>Human Resources</option>
+                <option value="accounting" {{hr}}>Accounting</option>
+                <option value="administration" {{hr}}>Administration</option>
+                <option value="customer-service" {{hr}}>Customer Service</option>
               </select>
             <input type="hidden" id="contactId" name="contactId" {{{idValue}}}>
             <button type="submit">Submit</button>
@@ -48,20 +51,19 @@
         <input type="text" class="search" placeholder="Search">
       </div>
     </header>
-      <div class="main-container">
-        <div class="contacts-container">
-          <div class="empty-contacts">
-            <h3>There are no contacts.</h3>
-            <a href="#contacts/new" class="add-contact">Add Contact</a>
-          </div>
-          <div class="all-contacts">
-          </div>
+    <div class="main-container">
+      <div class="contacts-container">
+        <div class="empty-contacts">
+          <h3>There are no contacts.</h3>
+          <a href="#contacts/new" class="add-contact">Add Contact</a>
         </div>
-        <div class="empty-search-contacts hide">
-          <p>"There are no contacts starting with "
+        <div class="all-contacts">
+        </div>
+      </div>
+      <div class="empty-search-contacts hide">
+        <p>"There are no contacts starting with "
           <strong></strong>
-          </p>
-        </div>
+        </p>
       </div>
     </div>
   </body>

@@ -37,7 +37,10 @@ document.addEventListener('DOMContentLoaded', () => {
       sales: '',
       marketing: '',
       engineering: '',
-      hr: ''
+      hr: '',
+      accounting: '',
+      admin: '',
+      cs: ''
     };
     
     const VALID_IDS = Object.keys(FORM_INPUT_REGEX).concat("tag");
@@ -200,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const contact = this.allContacts.filter(contact => contact.id === id)[0];
               
         const selectedTags = Object.keys(editForm).filter(key => {
-          key.match('(sales|marketing|engineering|hr)');
+          key.match('(sales|marketing|engineering|hr|accounting|admin|cs)');
         });
         selectedTags.forEach(tag => editForm[tag] = '');
 
