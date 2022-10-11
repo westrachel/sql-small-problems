@@ -4,16 +4,22 @@ const DomManager = {
     return document.querySelector(selector);
   },
   
-  selectors: {
-    search: '.search',
-    addSearch: '.add-search-container',
-    noContacts: '.empty-contacts',
-    contactsDiv: '.all-contacts',
-    contactsTemp: '#contacts-template'
+  findAll(selector) {
+    let items = document.querySelectorAll(selector);
+    return this.arrify(items);
+  },
+  
+  arrify(collection) {
+    return Array.prototype.slice.call(collection);
   },
   
   template(id) {
     return Handlebars.compile(this.find(id).innerHTML);
+  },
+  
+  renderHandlebarsHTML(id, data) {
+    let renderAsHTML = this.template(id);
+    return renderAsHTML(data);
   },
   
   addClass(...classSelectors) {
@@ -33,49 +39,68 @@ const DomManager = {
     });
   },
   
-  addHTMLForm(formObject) {
-    let renderAsHTML = this.template('#contact-form-template');
-    let html = renderAsHTML(formObject);
-    let parent = this.find('.main-container');
+  addHTMLForm(formData) {
+    const html = this.renderHandlebarsHTML('#contact-form-template', formData);
+    const parent = this.find('.main-container');
     parent.innerHTML += html;
   },
   
-  addContactsHTML() {
-    const self = this;
-    self.find(self.selectors.contactsDiv).remove();
-    let htmlData = self.selectors.contacts({ contacts: self.allContacts });
-    let contactsContainer = self.find('.contacts-container');
-    contactsContainer.innerHTML += htmlData;
-  },
-  
-  formIds() {
-    const forms = document.querySelectorAll('form');
-    forms = Array.prototype.slice.call(forms);
-    return forms.map(el => '#' + el.id);
-  },
-  
-  updateDisplayToCancel(editForm) {
-    const unHideEls = [this.selectors.addSearch,
-                       this.selectors.contactsDiv];
-    if (this.allContacts.length === 0) { 
-      unHideEls.push(this.selectors.noContacts); 
+  addContactsHTML(contactData) {
+    if (contactData.length !== 0) {
+      const contacts = { contacts: contactData };
+      const html = this.renderHandlebarsHTML('#contacts-template', contacts);
+      let contactsContainer = this.find('.all-contacts');
+      contactsContainer.innerHTML += html;
     }
-    const formForEditing = this.find('#' + editForm.id);
-      if (formForEditing) {
-        formForEditing.remove();
-      }
-        
-    this.addClass('hide', ...this.formIds());
+  },
+  
+  removeEditForm() {
+    const formForEditing = this.find('#edit-contact-form');
+    if (formForEditing) {
+      formForEditing.remove();
+    }
+  },
+  
+  updateDisplayToCancel() {
+    const unHideEls = ['.add-search-container', '.all-contacts'];
+    if (this.findAll('ul').length <= 2) { 
+      unHideEls.push('.empty-contacts'); 
+    }
+    
+    this.removeEditForm();
+    this.addClass('hide', '#add-contact-form');
     this.removeClass('hide', ...unHideEls);
   },
   
   displayAddForm() {
     this.addClass('hide', '.add-search-container',  '.empty-contacts', '.all-contacts');
-    this.removeClass('hide', this.selectors.addForm);
+    this.removeClass('hide', '#add-contact-form');
+  },
+  
+  addEditDisplayUpdate(data, formId) {
+    this.addContactsHTML(data);
+    this.addClass('hide', '#add-contact-form');
+    this.removeClass('hide', '.add-search-container', '.all-contacts');
+  },
+  
+  proposedContact(formId) {
+    const form = this.find(formId);
+    const contact = {};
+    const desiredProps = ["full_name", "email", "phone_number", "tags"];
+    
+    formId.match('edit') ? desiredProps.push('id') : 'do nothing';
+    
+    this.arrify(form).forEach(element => {
+      if (desiredProps.includes(element.id)) {
+        contact[element.name] = element.value;
+      }
+    });
+    
+    return contact;
   },
       
   displayEditForm(editHref, target, editForm) {
-    this.addClass('hide', this.selectors.addSearch, this.selectors.contactsDiv);
+    this.addClass('hide', '.add-search-container', '.all-contacts');
     const id = Number(this.anchorContactId(editHref, target.href));
     const contact = this.allContacts.filter(contact => contact.id === id)[0];
               
@@ -97,17 +122,25 @@ const DomManager = {
     this.removeClass('hide', '#edit-contact-form');
   },
       
-  submitForm(target) {
-    if (this.validContactInput(target.closest('form'))){
-      if (target.form.id === 'add-contact-form') {
-        this.allContacts.push(this.createContact(this.find(this.selectors.addForm)));
-        this.addClass('hide', this.selectors.addForm);
+  submitForm(target, xhr, Contact) {
+    const addFormFlag = target.form.innerHTML.match('Create');
+    let formId = '-contact-form'; 
+    formId = (addFormFlag ? '#add' : '#edit') + formId;
+
+    let contact = Object.create(Contact).init(this.proposedContact(formId));
+    console.log(contact);
+    if (Array.isArray(contact)) {
+      contact.forEach(errorMsg => alert(errorMsg));
+    } else {
+      if (formId === 'add-contact-form') {
+        xhr.saveContact(contact).then(function(contact) {
+          this.addEditDisplayUpdate(contact, formId);
+        });
       } else {
-        this.editContacts(target);
+        xhr.updateContact(contact).then(function(contacts) {
+          this.addEditDisplayUpdate(contact, formId);
+        });
       }
-            
-      this.addContactsHTML();
-      this.removeClass('hide', this.selectors.addSearch);
     }
   },
 };

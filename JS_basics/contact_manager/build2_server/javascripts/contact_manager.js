@@ -1,17 +1,16 @@
-import { createContact } from './contact.js';
+import { contactCreator } from './contact.js';
 import { domManager } from './dom_manager.js';
 import { requestManager } from './request_manager.js';
 import { createForm } from './form.js';
 
-
 const ContactManager = (() => {
   const dom = domManager();
+  const Contact = contactCreator();
   const requester = requestManager();
    
   return {
     init() {
       dom.addHTMLForm(createForm('add-contact-form', 'Create Contact'));
-      dom.selectors.addForm = '#add-contact-form';
       this.bindEvents();
     },
     
@@ -23,10 +22,13 @@ const ContactManager = (() => {
         dom.editOrDeleteContact(target);
               
       } else if (target.innerHTML.match('Submit')) {
-        dom.submitForm(target);
+        dom.submitForm(target, requester, Contact);
             
       } else if (target.innerHTML.match('Cancel')) {
         dom.updateDisplayToCancel();
+        
+      } else if (target.innerHTML.match('(Work|Friend|Neighbor|Family)')) {
+        dom.showTaggedContacts(target);
       }
     },
 
@@ -45,7 +47,6 @@ const ContactManager = (() => {
   };
 
 })();
-
 
 document.addEventListener('DOMContentLoaded', () => {
   ContactManager.init();

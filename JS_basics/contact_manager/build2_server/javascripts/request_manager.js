@@ -1,64 +1,55 @@
 const RequestManager = {
-  BASE_URL: 'http://localhost:3000/api/contacts',
-
-  deleteContact(id){
-    const confirmed = confirm("Are you sure you want to delete this contact?");
-    if (confirmed) {
-      let urlEnd = '/:' + id;
-      this.makeRequest('DELETE', urlEnd);
+  createUrl(id=null) {
+    const BASE_URL = 'http://localhost:3000/api/contacts';
+    return id ? BASE_URL + '/:' + id : BASE_URL;
+  },
+  
+  getContacts() {
+    return this.makeRequest('GET', 'No Contacts');
+  },
+  
+  getContact(id) {
+    return this.makeRequest('GET', 'No Contact', id);
+  },
+  
+  deleteContact(id) {
+    return this.makeRequest('DELETE', 'Contact not found', id);
+  },
+  
+  saveContact(data) {
+    return this.makeRequest('POST', 'Contact not found', null, data);
+  },
+  
+  updateContact(data) {
+    return this.makeRequest('POST', 'Contact not found', null, data);
+  },
+  
+  makeRequest(httpMethod, rejectVal, id=null, data=null) {
+    return new Promise(function(resolve, reject) {
+      let request = new XMLHttpRequest();
+      request.open(httpMethod, this.createUrl(id));
       
-    }
-  },
-  
-        deleteContact: function(deleteHref, target) {
-        const confirmed = confirm("Are you sure you want to delete this contact?");
-        if (confirmed) {
-          const id = Number(this.anchorContactId(deleteHref, target.href));
-          this.allContacts = this.allContacts.filter(contact => contact.id !== id);
-          target.parentNode.parentNode.remove();
-                
-          if (this.allContacts.length === 0) {
-            this.removeClass('hide', SELECTORS.noContacts);
-          }
+      request.addEventListener('load', () => {
+        if (request.status[0] === '2') {
+          resolve(request.response);
+        } else {
+          reject(rejectVal);
         }
-      },
-  
-  getContacts(cb) {
-    this.makeRequest('GET', cb);
-  },
-  
-  getContact(cb, id) {
-    let urlEnd = '/:' + id;
-    this.makeRequest('GET', cb, urlEnd);
-  },
-  
-  addContact(cb, data) {
-    this.makeRequest('POST', cb, data);
-  },
-    
-  makeRequest(httpMethod, callback, urlAddend = '', data=null) {
-    let request = new XMLHttpRequest();
-    const url = this.BASE_URL + urlAddend;
-
-    request.addEventListener('load', () => {
-      callback(request.response);
+      });
+      
+      this.sendRequest(request, data);
     });
-
-    request.open(httpMethod, url);
-    request.responseType = 'json';
-    
-    this.sendRequest(request, data=null);
   },
   
-  sendRequest(request, data=null) {
-    if (data) {
+  sendRequest(request, requestData) {
+    if (requestData) {
       request.sendRequestHeader('Content-Type', 'application/json; charset=utf-8');
-      let json = JSON.stringify(data);
+      let json = JSON.stringify(requestData);
       request.send(json);
     } else {
       request.send();
     }
-  }
+  },
 
 };
 
