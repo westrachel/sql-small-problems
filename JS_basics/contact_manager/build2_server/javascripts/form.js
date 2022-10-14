@@ -4,14 +4,10 @@ let Form = {
     this.title = title;
     this.full_name = '';
     this.email = '';
-    this.phone_number = '';
-    this.sales = '';
-    this.marketing = '';
-    this.engineering = '';
-    this.hr = '';
-    this.accounting = '';
-    this.admin = '';
-    this.cs = '';
+    this.work = '';
+    this.friend = '';
+    this.neighbor = '';
+    this.family = '';
     return this;
   },
 

@@ -11,6 +11,7 @@ const ContactManager = (() => {
   return {
     init() {
       dom.addHTMLForm(createForm('add-contact-form', 'Create Contact'));
+      dom.editForm = createForm('edit-contact-form', 'Edit Contact');
       this.bindEvents();
     },
     
@@ -19,7 +20,7 @@ const ContactManager = (() => {
         dom.displayAddForm();
 
       } else if (target.nodeName === 'A') {
-        dom.editOrDeleteContact(target);
+        dom.editOrDeleteContact(target, requester);
               
       } else if (target.innerHTML.match('Submit')) {
         dom.submitForm(target, requester, Contact);

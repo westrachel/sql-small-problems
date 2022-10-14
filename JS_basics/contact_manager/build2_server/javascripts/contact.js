@@ -57,7 +57,7 @@ const Contact = (() => {
         return errorMsgs;
       } else {
         this.email = this.encodeBadChars(props.email);
-        this.full_name = this.encodeBadChars(props.name);
+        this.full_name = this.encodeBadChars(props.full_name);
         this.phone_number = props.phone_number;
         this.id = props.id;
         this.tags = props.tags;
