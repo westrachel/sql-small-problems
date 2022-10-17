@@ -16,20 +16,21 @@ const ContactManager = (() => {
     },
     
     processClick(target) {
+      const html = target.innerHTML;
+      const type = target.nodeName;
+
       if (target.className.match('add-contact')) {
         dom.displayAddForm();
-
-      } else if (target.nodeName === 'A') {
+      } else if (type === 'A') {
         dom.editOrDeleteContact(target, requester);
-              
-      } else if (target.innerHTML.match('Submit')) {
+      } else if (html.match('Submit')) {
         dom.submitForm(target, requester, Contact);
-            
-      } else if (target.innerHTML.match('Cancel')) {
+      } else if (html.match('Cancel')) {
         dom.updateDisplayToCancel();
-        
-      } else if (target.innerHTML.match('(Work|Friend|Neighbor|Family)')) {
-        dom.showTaggedContacts(target);
+      } else if (html.toLowerCase().match(Contact.tagsRegex()) && type === 'BUTTON') {
+        dom.showTaggedContacts(target.innerHTML);
+      } else if (html.match('Remove Tag Filter|Remove Name Search Filter')) {
+        dom.removeFilter(html);
       }
     },
 
@@ -40,9 +41,9 @@ const ContactManager = (() => {
         self.processClick(event.target);
       });
       
-      //document.addEventListener('keyup', event => {
-      //  alert('have not built out search field listener');
-      //});
+      dom.find('.search').addEventListener('keyup', event => {
+        dom.showSearchMatches();
+      });
     },
     
   };

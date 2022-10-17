@@ -4,7 +4,11 @@ const Contact = (() => {
     'email': ['[A-Za-z]{1,}@[A-Za-z]{1,}\.[A-Za-z]{2,}', 
               'Ensure there is a leading name, an @, and an extension in the email'],
     'phone_number': ['[0-9]{3}-[0-9]{3}-[0-9]{4}',
-                     'Phone number should have 10 digits & appropriate hyphens (ex: 222-222-2222)']
+                     'Phone number should have 10 digits & appropriate hyphens (ex: 222-222-2222)'],
+    'tags': ['work|friend|family|neighbor',
+             ("Entry must include >= 1 of the following:\n" +
+             "'work', 'family', 'friend', or 'neighbor'.\n" +
+             "All other entered tags will be ignored.")]
   };
 
   const DANGER_CHARS_ENCODING = {
@@ -16,10 +20,11 @@ const Contact = (() => {
   };
   
   return {
-    invalidErrorMsgs(...proposed) { // email, name, phone
+    invalidErrorMsgs(...proposed) { 
       const vals = { email: proposed[0],
                    full_name: proposed[1],
-                   phone_number: proposed[2] };
+                   phone_number: proposed[2],
+                   tags: proposed[3]};
       const msgs = [];
                  
       Object.keys(vals).map(property => {
@@ -28,6 +33,10 @@ const Contact = (() => {
         }
       });
       return msgs;
+    },
+    
+    tagsRegex() {
+      return INPUT_REGEX["tags"][0];
     },
   
     encodeBadChars(string) {
@@ -38,6 +47,15 @@ const Contact = (() => {
           return char;
         }
       }).join('');
+    },
+    
+    encodeTags(string) {
+      const tags = [];
+      string.split(', ').forEach(tag => {
+        let matchArr = tag.match(this.tagsRegex());
+        if (matchArr) { tags.push(matchArr) }
+      });
+      return tags.length > 1 ? tags.join(', ') : tags[0];
     },
     
     edit(newInfoObj) {
@@ -52,15 +70,16 @@ const Contact = (() => {
     },
   
     init(props) {
-      const errorMsgs = this.invalidErrorMsgs(props.email, props.full_name, props.phone_number);
-      if (!errorMsgs) {
+      const errorMsgs = this.invalidErrorMsgs(props.email, props.full_name,
+                                              props.phone_number, props.tags);
+      if (errorMsgs.length > 0) {
         return errorMsgs;
       } else {
         this.email = this.encodeBadChars(props.email);
         this.full_name = this.encodeBadChars(props.full_name);
         this.phone_number = props.phone_number;
         this.id = props.id;
-        this.tags = props.tags;
+        this.tags = this.encodeTags(props.tags);
         return this;
       }
     },

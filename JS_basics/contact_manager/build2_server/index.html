@@ -11,7 +11,7 @@
   <script type="module" src="./javascripts/contact_manager.js"></script>
   <script id="contacts-template" type="text/x-handlebars-template">
     {{#each contacts}}
-    <ul><strong>{{full_name}}</strong>
+    <ul id="contactId-{{id}}"><strong>{{full_name}}</strong>
       <li><strong>Phone Number:</strong>{{phone_number}}</li>
       <li><strong>Email:</strong>{{email}}</li>
       <li><strong>Tags:</strong>{{tags}}</li>
@@ -27,13 +27,7 @@
         Fullname:<input type="text" id="full_name" name="full_name" {{{full_name}}} required>
         Email address:<input type="text" id="email" name="email" {{{email}}} required>
         Phone Number:<input type="text" id="phone_number" name="phone_number" {{{phone_number}}} required>
-        <label for="tag">Select a tag:</label>
-          <select id="tags" name="tags" multiple>
-            <option value="work" {{work}}>Work</option>
-            <option value="friend" {{friend}}>Friend</option>
-            <option value="neighbor" {{neighbor}}>Neighbor</option>
-            <option value="family" {{family}}>Family</option>
-          </select>
+        Enter Tags (family, friend, work, & neighbor) Comma-Separated:<input type="text" id="tags" name="tags" {{{tags}}} required>
         <input type="hidden" id="id" name="id" {{{idValue}}}>
         <button type="submit">Submit</button>
         <button type="button">Cancel</button>
@@ -46,12 +40,20 @@
     <h1>Contact Manager</h1>
     <div class="add-search-container">
       <a href="#contacts/new" class="add-contact">Add Contact</a>
-      <input type="text" class="search" placeholder="Search">
-      <div class="tags">
-        <button type="button">Work</button>
-        <button type="button">Friend</button>
-        <button type="button">Neighbor</button>
-        <button type="button">Family</button>
+      <input type="text" class="search" placeholder="Search By Name">
+      <button type="button" class="search-filter-removal hide">Remove Name Search Filter</button>
+      <div class="filter-container">
+        <div class='tag-filters'>
+          <p>Filter By Tag:</p>
+          <button type="button">Work</button>
+          <button type="button">Friend</button>
+          <button type="button">Neighbor</button>
+          <button type="button">Family</button>
+        </div>
+        <div class="reset-tag-filters hide">
+          <button type="button">Remove Tag Filter</button>
+          <p>Showing all contacts for the tag: <strong></strong></p>
+        </div>
       </div>
     </div>
   </header>
@@ -65,8 +67,8 @@
       </div>
     </div>
     <div class="empty-search-contacts hide">
-      <p>"There are no contacts starting with "
-        <strong></strong>
+      <p>
+        There are no contacts starting with <strong></strong>.
       </p>
     </div>
   </div>

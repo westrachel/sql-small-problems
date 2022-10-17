@@ -57,8 +57,8 @@ const RequestManager = (() => {
       return makeRequest('POST', true, null, data);
     },
   
-    updateContact(data) {
-      return makeRequest('POST', true, null, data);
+    updateContact(data, id) {
+      return makeRequest('PUT', true, id, data);
     }
   };
 

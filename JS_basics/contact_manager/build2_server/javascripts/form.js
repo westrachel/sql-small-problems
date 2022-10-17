@@ -4,10 +4,7 @@ let Form = {
     this.title = title;
     this.full_name = '';
     this.email = '';
-    this.work = '';
-    this.friend = '';
-    this.neighbor = '';
-    this.family = '';
+    this.tags = '';
     return this;
   },
 
