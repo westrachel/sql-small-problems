@@ -5,31 +5,39 @@ const AutoComplete = {
     this.bindEvent();
   },
   
+  resetList() {
+    document.querySelector('.returned-matches').innerHTML ='';
+  },
+  
   bindEvent() {
-    document.querySelector('input').addEventListener('keyup', event => {
-      this.updateUl(event.target.innerText);
+    const input = document.querySelector('input');
+    input.addEventListener('input', event => {
+      this.resetList();
+      this.updateUl(input.value);
     });
   },
   
   updateUl(search) {
     const matches = this.findMatches(search);
-    const parent = this.document.querySelector('ul');
-    matches.foreEach(country => {
+    const parent = document.querySelector('.returned-matches');
+    matches.forEach(country => {
       parent.appendChild(this.createLi(country));
-    });
+    }, this);
   },
   
   createLi(country) {
-    const li = document.creatElement('li');
+    const li = document.createElement('li');
+    li.classList.add('matching-country');
+    li.innerText = country.name;
+    return li;
   },
   
   findMatches(search) {
+    search = search[0].toUpperCase() + search.slice(1);
     return countries.filter(obj => {
-      const regex = new RegExp(`^${search}`, 'i')
-      return obj.name.match(regex);
-    })
+      return obj.name.startsWith(search);
+    });
   },
-  
 };
 
 document.addEventListener('DOMContentLoaded', event => {
